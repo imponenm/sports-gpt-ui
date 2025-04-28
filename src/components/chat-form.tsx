@@ -33,20 +33,16 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
 
   const header = (
     <header className="m-auto flex max-w-96 flex-col gap-5 text-center">
-      <h1 className="text-2xl font-semibold leading-none tracking-tight text-red-500">Basic AI Chatbot Template</h1>
+      <h1 className="text-2xl font-semibold leading-none tracking-tight text-red-500">Sports GPT - A Chatbot for Sports</h1>
       <p className="text-muted-foreground text-sm">
-        This is an AI chatbot app template built with <span className="text-foreground">Next.js</span>, the{" "}
-        <span className="text-foreground">Vercel AI SDK</span>, and <span className="text-foreground">Vercel KV</span>.
-      </p>
-      <p className="text-muted-foreground text-sm">
-        Connect an API Key from your provider and send a message to get started.
+        This is an AI chatbot for sports. It's fine-tuned to provide accurate and helpful information about sports data.
       </p>
     </header>
   )
 
   return (
     <main
-      className={`mx-auto flex h-[90vh] max-h-[90vh] w-full max-w-[35rem] flex-col items-stretch border-none ${className || ''}`}
+      className={`mx-auto flex h-[90vh] max-h-[90vh] w-full max-w-[55rem] flex-col items-stretch border-none ${className || ''}`}
       {...props}
     >
       <div className="flex-1 overflow-y-auto px-6 pb-2 flex flex-col justify-end">
@@ -65,22 +61,22 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
           </div>
         ) : header}
       </div>
-      <div className="chat-input-container sticky bottom-0 bg-background">
+      <div className="chat-input-container sticky bottom-0 bg-background p-8">
         <form
           onSubmit={handleSubmit}
-          className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-4 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
+          className="bg-background mx-6 mb-4 flex items-center gap-4 text-sm p-4" 
         >
           <AutoResizeTextarea
             onKeyDown={handleKeyDown}
             onChange={setInput}
             value={input}
             placeholder="Enter a message"
-            className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none py-1"
+            className="placeholder:text-muted-foreground w-full flex-1 bg-transparent"
           />
           <Button 
             variant="ghost" 
             size="sm" 
-            className="absolute bottom-1 right-1 size-6 rounded-full"
+            className="size-8 rounded-full shrink-0"
             type="submit"
           >
             <ArrowUpIcon size={16} />

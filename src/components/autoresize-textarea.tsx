@@ -33,7 +33,7 @@ export function AutoResizeTextarea({ className, value, onChange, ...props }: Aut
         onChange(e.target.value)
         resizeTextarea()
       }}
-      className={cn("resize-none min-h-4 max-h-80", className)}
+      className={cn("resize-none min-h-4 max-h-80 pl-4", className)}
     />
   )
 }
