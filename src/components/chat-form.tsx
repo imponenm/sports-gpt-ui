@@ -4,6 +4,8 @@ import { useChat } from "@ai-sdk/react"
 import { ArrowUpIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useEffect, useRef } from "react"
+import { AutoResizeTextarea } from "@/components/autoresize-textarea"
+
 
 export function ChatForm({ className, ...props }: React.ComponentProps<"form">) {
   const { messages, input, setInput, append } = useChat({
@@ -68,13 +70,12 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
           onSubmit={handleSubmit}
           className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-4 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
         >
-          <textarea
+          <AutoResizeTextarea
             onKeyDown={handleKeyDown}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
             value={input}
             placeholder="Enter a message"
-            className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none resize-none min-h-[24px] max-h-[200px] py-1"
-            rows={1}
+            className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none py-1"
           />
           <Button 
             variant="ghost" 
