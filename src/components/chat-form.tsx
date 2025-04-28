@@ -42,21 +42,6 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     </header>
   )
 
-  const messageList = (
-    <div className="chat-messages-container flex flex-col gap-4">
-      {messages.map((message, index) => (
-        <div
-          key={index}
-          data-role={message.role}
-          className="chat-message max-w-[80%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
-        >
-          {message.content}
-        </div>
-      ))}
-      <div ref={messagesEndRef} />
-    </div>
-  )
-
   return (
     <main
       className={`mx-auto flex h-[90vh] max-h-[90vh] w-full max-w-[35rem] flex-col items-stretch border-none ${className || ''}`}
@@ -64,8 +49,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     >
       <div className="flex-1 overflow-y-auto px-6 pb-2 flex flex-col justify-end">
         {messages.length ? (
-          <div className="chat-messages-container flex flex-col-reverse gap-4">
-            <div ref={messagesEndRef} />
+          <div className="chat-messages-container flex flex-col gap-4">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -75,6 +59,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
                 {message.content}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
         ) : header}
       </div>
