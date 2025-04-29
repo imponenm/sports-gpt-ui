@@ -401,19 +401,18 @@ SELECT name, made_three_point_field_goals FROM player_season_totals WHERE season
 
 3. How many games has Steph Curry score 10 or more 3 pointers?:
 \`\`\`sql
-SELECT name, game_date, made_three_point_field_goals, attempted_field_goals FROM player_box_scores WHERE levenshtein(lower(name), lower('Steph Curry')) <= 3; AND made_three_point_field_goals >= 10;
+SELECT name, game_date, made_three_point_field_goals, attempted_field_goals FROM player_box_scores WHERE lower(name) = lower('Stephen Curry') AND made_three_point_field_goals >= 10;
 \`\`\`
 
-4. Searching for a player with a fuzzy name:
+4. Show me Lebron's season stats for each season:
 \`\`\`sql
-SELECT * FROM player_box_scores
-WHERE levenshtein(lower(name), lower('LeBron James')) <= 3;
+SELECT * FROM player_season_totals WHERE lower(name) = lower('Lebron James');
 \`\`\`
 
 5. How many games did Lillard play this season?
 \`\`\`sql
 -- NOTE: On questions where only a first or last name is provided, try and figure out which current NBA player they are
-SELECT COUNT(*) FROM player_box_scores WHERE name = 'Damian Lillard' AND season_year = '2019';
+SELECT COUNT(*) FROM player_box_scores WHERE lower(name) = lower('Damian Lillard') AND season_year = '2019';
 \`\`\`
 
 6. How many games did the Lakers win this season?
@@ -438,7 +437,7 @@ SELECT
 FROM 
     player_season_totals
 WHERE 
-    levenshtein(lower(name), lower('Damian Lillard')) <= 3
+    name = 'Damian Lillard'
 ORDER BY 
     season_year DESC;
 \`\`\`
@@ -458,7 +457,7 @@ SELECT
 FROM 
     player_season_totals
 WHERE 
-    levenshtein(lower(name), lower('Stephen Curry')) <= 3
+    name = 'Stephen Curry'
 ORDER BY 
     season_year DESC;
 \`\`\`
@@ -474,7 +473,7 @@ SELECT
 FROM 
     player_box_scores
 WHERE 
-    levenshtein(lower(name), lower('Steph Curry')) <= 3
+    name = 'Stephen Curry'
     AND opponent = 'Houston Rockets'
     AND game_date BETWEEN '2022-09-15' AND '2023-06-31';
 \`\`\`
@@ -489,7 +488,7 @@ SELECT
 FROM 
     player_season_totals
 WHERE 
-    levenshtein(lower(name), lower('Steph Curry')) <= 3
+    lower(name) = lower('Stephen Curry')
     AND season_year = '2023';
 \`\`\`
 
