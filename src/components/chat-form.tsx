@@ -1,87 +1,79 @@
 "use client"
 
+import { cn } from "@/lib/utils"
+
 import { useChat } from "@ai-sdk/react"
+
 import { ArrowUpIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useEffect, useRef } from "react"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
 
-export function ChatForm() {
-    const { messages, input, setInput, append } = useChat({ api: "/api/chat" })
-    const endRef = useRef<HTMLDivElement>(null)
+export function ChatForm({ className, ...props }: React.ComponentProps<"form">) {
+  const { messages, input, setInput, append } = useChat({
+    api: "/api/chat",
+  })
 
-    useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, [messages])
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    void append({ content: input, role: "user" })
+    setInput("")
+  }
 
-    const onSubmit = () => {
-        if (!input.trim()) return
-        append({ role: "user", content: input })
-        setInput("")
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>)
     }
+  }
 
-    const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault()
-            onSubmit()
-        }
-    }
+  const header = (
+    <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
+      <h1 className="text-2xl font-semibold leading-none tracking-tight">Sports GPT</h1>
+      <p className="text-muted-foreground text-md">
+        A chatbot that has been fine-tuned to provide accurate for sports data.
+      </p>
+    </header>
+  )
 
-    const isEmpty = messages.length === 0
+  const messageList = (
+    <div className="my-4 flex h-fit min-h-full flex-col gap-4">
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          data-role={message.role}
+          className="max-w-[80%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
+        >
+          {message.content}
+        </div>
+      ))}
+    </div>
+  )
 
-    return (
-        <main className="flex flex-col min-h-[80vh] w-2/3 mx-auto border">
-            {/* Messages area */}
-            <div
-                className={`flex-1 overflow-y-auto ${isEmpty
-                        ? "flex flex-col items-center justify-center"
-                        : "flex flex-col justify-end space-y-4 pb-24"
-                    }`}
-            >
-                {isEmpty ? (
-                    <div className="text-center text-red-500">
-                        <h1 className="text-2xl font-semibold">Sports GPT</h1>
-                        <p className="text-sm text-muted-foreground mt-2">
-                            AI-powered chatbot for all your sports data needs.
-                        </p>
-                    </div>
-                ) : (
-                    <>
-                        {messages.map((m, i) => (
-                            <div
-                                key={i}
-                                className={
-                                    "max-w-[80%] rounded-xl px-3 py-2 text-sm " +
-                                    (m.role === "user"
-                                        ? "self-end bg-blue-500 text-white"
-                                        : "self-start bg-gray-100 text-black")
-                                }
-                            >
-                                {m.content}
-                            </div>
-                        ))}
-                        <div ref={endRef} />
-                    </>
-                )}
-            </div>
-
-            {/* Sticky input area with padding */}
-            <div className="flex sticky bottom-1 bg-white border rounded-md">
-
-                <AutoResizeTextarea
-                    value={input}
-                    onChange={setInput}
-                    onKeyDown={onKeyDown}
-                    placeholder="Type your message…"
-                    className="flex-1 p-2 resize-none min-h-[2rem] max-h-[20rem] bg-transparent focus:outline-none"
-                />
-
-                <Button onClick={onSubmit} type="button" variant="ghost" size="sm">
-                    <ArrowUpIcon size={16} />
-                </Button>
-
-            </div>
-
-        </main>
-    )
+  return (
+    <main
+      className={cn(
+        "ring-none mx-auto flex h-[85vh] w-full max-w-[55rem] flex-col items-stretch border-none",
+        className,
+      )}
+      {...props}
+    >
+      <div className="flex-1 content-center overflow-y-auto px-6">{messages.length ? messageList : header}</div>
+      <form
+        onSubmit={handleSubmit}
+        className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-6 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-1 focus-within:ring-offset-0"
+      >
+        <AutoResizeTextarea
+          onKeyDown={handleKeyDown}
+          onChange={(v) => setInput(v)}
+          value={input}
+          placeholder="Enter a message"
+          className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
+        />
+  
+        <Button variant="ghost" size="sm" className="absolute bottom-1 right-1 size-6 rounded-full">
+            <ArrowUpIcon size={16} />
+        </Button>
+      </form>
+    </main>
+  )
 }
