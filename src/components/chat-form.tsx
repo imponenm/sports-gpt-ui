@@ -27,6 +27,8 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
   const { messages, input, setInput, append } = useChat({
     api: "/api/chat",
   })
+  const [queryResults, setQueryResults] = useState<Record<string, any>[]>([])
+  const [displayMessages, setDisplayMessages] = useState(messages)
 
   const sendQueriesToAPI = async (queries: string[]) => {
     try {
@@ -40,6 +42,9 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
       
       const data = await response.json();
       console.log('Query Results:', data.results);
+      // Flatten the array of arrays into a single array of results
+      const flattenedResults = data.results.flatMap(resultList => resultList);
+      setQueryResults(flattenedResults);
     } catch (error) {
       console.error('Error executing queries:', error);
     }
@@ -74,6 +79,22 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     
     extractSqlBlocks();
   }, [messages]);
+
+  // Update displayMessages whenever messages or queryResults change
+  useEffect(() => {
+    const updatedMessages = [...messages];
+    // Append query results to the appropriate message
+    // Logic to append results to the correct message
+    setDisplayMessages(updatedMessages);
+  }, [messages, queryResults]);
+
+  // Function to extract column names from the first row of the results
+  const getColumnNames = (results: Record<string, any>[]) => {
+    if (results.length > 0 && results[0].success && results[0].data.length > 0) {
+      return Object.keys(results[0].data[0]);
+    }
+    return [];
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -111,30 +132,52 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
 
   const messageList = (
     <div className="my-4 flex h-fit min-h-full flex-col gap-4">
-      {messages.map((message, index) => {
-        // Check if this message has an SQL block
+      {displayMessages.map((message, index) => {
         const associatedSqlBlocks = sqlBlocks.filter(block => block.messageIndex === index);
         const hasSqlBlock = associatedSqlBlocks.length > 0;
         
-        // If it's an assistant message with SQL, show only the SQL block
         if (message.role === 'assistant' && hasSqlBlock) {
           return (
             <div key={index} className="self-start">
               {associatedSqlBlocks.map((block, sqlIndex) => (
                 <div
                   key={`sql-${index}-${sqlIndex}`}
-                  className="mt-2 max-w-[80%] rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
+                  className="mt-2 max-w-[80%] w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
                 >
                   <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
                   {block.sql}
+                  <div className="mt-2">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead>
+                        <tr>
+                          {getColumnNames(queryResults).map((key) => (
+                            <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              {key}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {queryResults.map((result, resultIndex) => (
+                          result.success && result.data.map((row, rowIndex) => (
+                            <tr key={`${resultIndex}-${rowIndex}`} className="border-b">
+                              {Object.entries(row).map(([key, value], valueIndex) => (
+                                <td key={valueIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {typeof value === 'object' ? JSON.stringify(value) : value}
+                                </td>
+                              ))}
+                            </tr>
+                          ))
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ))}
             </div>
           );
         }
         
-        // For user messages or assistant messages without SQL, show the original message
-        // For assistant messages, clean up any SQL blocks from the content
         const displayContent = message.role === 'assistant' 
           ? message.content.replace(/```sql[\s\S]*?```/g, '').trim()
           : message.content;

@@ -36,7 +36,9 @@ export async function POST(req: Request) {
 
     await pool.end();
 
-    return NextResponse.json({ results });
+    const formattedResults = results.map(result => result.success ? result.data : []);
+
+    return NextResponse.json({ results: formattedResults });
   } catch (error) {
     return NextResponse.json(
       { 
