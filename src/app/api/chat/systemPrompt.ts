@@ -462,4 +462,35 @@ WHERE
 ORDER BY 
     season_year DESC;
 \`\`\`
+
+8. Show me steph curry's 3 point statistics for games agains the rockets in 2022-2023
+\`\`\`sql
+-- NOTE: If the query is about a one or more games and we query the box scores table, we need to filter between the start and end of the season, typically starting no earlier than September 15th and ending no later than June 31st
+SELECT 
+    name,
+    game_date,
+    made_three_point_field_goals,
+    attempted_three_point_field_goals
+FROM 
+    player_box_scores
+WHERE 
+    levenshtein(lower(name), lower('Steph Curry')) <= 3
+    AND opponent = 'Houston Rockets'
+    AND game_date BETWEEN '2022-09-15' AND '2023-06-31';
+\`\`\`
+
+9. Show me steph curry's total 3 point statistics for the 2022-2023 season
+\`\`\`sql
+-- NOTE: If the query is about one or more seasons and we don't need box scores, we query the season totals table. In this case, we filter by season_year. If the user provides phrases it as '2022-2023 season', we should filter by season_year = '2023'. If they phrase is as '2022 and 2023 seasons', we should filter by season_year IN ('2022', '2023').
+SELECT 
+    name,
+    made_three_point_field_goals,
+    attempted_three_point_field_goals
+FROM 
+    player_season_totals
+WHERE 
+    levenshtein(lower(name), lower('Steph Curry')) <= 3
+    AND season_year = '2023';
+\`\`\`
+
 `; 
