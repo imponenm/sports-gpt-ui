@@ -9,7 +9,7 @@ export const metadata = {
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="">
+      <body className="pt-24">
         {children}
       </body>
     </html>
