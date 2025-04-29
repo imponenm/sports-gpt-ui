@@ -14,13 +14,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
+interface SQLBlock {
+  sql: string;
+  messageIndex: number;
+}
 
 export function ChatForm({ className, ...props }: React.ComponentProps<"form">) {
   const [selectedSport, setSelectedSport] = useState("basketball")
+  const [sqlBlocks, setSqlBlocks] = useState<SQLBlock[]>([])
   const { messages, input, setInput, append } = useChat({
     api: "/api/chat",
   })
+
+  const sendQueriesToAPI = async (queries: string[]) => {
+    try {
+      const response = await fetch('/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query_list: queries }),
+      });
+      
+      const data = await response.json();
+      console.log('Query Results:', data.results);
+    } catch (error) {
+      console.error('Error executing queries:', error);
+    }
+  };
+
+  // Extract SQL blocks from messages and send to API
+  useEffect(() => {
+    const extractSqlBlocks = () => {
+      const newBlocks: SQLBlock[] = [];
+      const queries: string[] = [];
+      
+      messages.forEach((message, messageIndex) => {
+        const regex = /```sql\n([\s\S]*?)```/g;
+        let match;
+        while ((match = regex.exec(message.content)) !== null) {
+          const sql = match[1].trim();
+          newBlocks.push({
+            sql,
+            messageIndex
+          });
+          queries.push(sql);
+        }
+      });
+      
+      setSqlBlocks(newBlocks);
+      
+      // If we found any SQL queries, send them to the API
+      if (queries.length > 0) {
+        void sendQueriesToAPI(queries);
+      }
+    };
+    
+    extractSqlBlocks();
+  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -58,15 +111,45 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
 
   const messageList = (
     <div className="my-4 flex h-fit min-h-full flex-col gap-4">
-      {messages.map((message, index) => (
-        <div
-          key={index}
-          data-role={message.role}
-          className="max-w-[80%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
-        >
-          {message.content}
-        </div>
-      ))}
+      {messages.map((message, index) => {
+        // Check if this message has an SQL block
+        const associatedSqlBlocks = sqlBlocks.filter(block => block.messageIndex === index);
+        const hasSqlBlock = associatedSqlBlocks.length > 0;
+        
+        // If it's an assistant message with SQL, show only the SQL block
+        if (message.role === 'assistant' && hasSqlBlock) {
+          return (
+            <div key={index} className="self-start">
+              {associatedSqlBlocks.map((block, sqlIndex) => (
+                <div
+                  key={`sql-${index}-${sqlIndex}`}
+                  className="mt-2 max-w-[80%] rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
+                >
+                  <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
+                  {block.sql}
+                </div>
+              ))}
+            </div>
+          );
+        }
+        
+        // For user messages or assistant messages without SQL, show the original message
+        // For assistant messages, clean up any SQL blocks from the content
+        const displayContent = message.role === 'assistant' 
+          ? message.content.replace(/```sql[\s\S]*?```/g, '').trim()
+          : message.content;
+
+        return (
+          <div key={index}>
+            <div
+              data-role={message.role}
+              className="max-w-[80%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
+            >
+              {displayContent}
+            </div>
+          </div>
+        );
+      })}
     </div>
   )
 

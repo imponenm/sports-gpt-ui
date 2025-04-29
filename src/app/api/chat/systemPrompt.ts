@@ -139,6 +139,30 @@ CREATE TABLE team_box_scores (
     outcome TEXT CHECK (outcome IN ('WIN', 'LOSS'))
 );
 
+CREATE TABLE team_season_totals (
+    id SERIAL PRIMARY KEY,
+    team TEXT NOT NULL,                                                    
+    season_year INTEGER NOT NULL,
+    games_played INTEGER,                                            
+    minutes_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    points INTEGER,
+    wins INTEGER,
+    losses INTEGER
+);
+
 CREATE TABLE imported_files (
     id SERIAL PRIMARY KEY,
     table_name TEXT NOT NULL,
@@ -389,9 +413,10 @@ LEAGUE_ABBREVIATIONS_TO_LEAGUE = {
 
 ### EXAMPLES:
 
-1. Get the season schedule from the 2018-2019 season:
+1. Get the Mavericks season schedule from the 2018-2019 season:
 \`\`\`sql
-SELECT * FROM season_schedule WHERE season_year = '2019';
+-- NOTE: When searching for team names, use the full team name, and uppercase letters.
+SELECT * FROM season_schedule WHERE (home_team = 'DALLAS MAVERICKS' OR away_team = 'DALLAS MAVERICKS') AND season_year = '2019';
 \`\`\`
 
 2. Who had the most 3 pointers made in the 2019 season:
@@ -412,15 +437,22 @@ SELECT * FROM player_season_totals WHERE lower(name) = lower('Lebron James');
 5. How many games did Lillard play this season?
 \`\`\`sql
 -- NOTE: On questions where only a first or last name is provided, try and figure out which current NBA player they are
-SELECT COUNT(*) FROM player_box_scores WHERE lower(name) = lower('Damian Lillard') AND season_year = '2019';
+SELECT name, games_played FROM player_season_totals WHERE lower(name) = lower('Damian Lillard') AND season_year = '2019';
 \`\`\`
 
 6. How many games did the Lakers win this season?
 \`\`\`sql
-SELECT COUNT(*) FROM team_box_scores WHERE team = 'Los Angeles Lakers' AND outcome = 'WIN' AND season_year = '2019';
+-- When asking about team season data, we should query the team_season_totals table
+SELECT team, season_year, games_played, wins FROM team_season_totals WHERE team = 'LOS ANGELES LAKERS' AND season_year = '2019';
 \`\`\`
 
-7. Compare three point statistics between Damian Lillard and Stephen Curry:
+7. How any games did the Lakers score 10 or more 3 point shots this season?
+\`\`\`sql
+-- When asking about team data in specific games, we should query the team_box_scores table
+SELECT team , opponent, game_date, made_three_point_field_goals, attempted_three_point_field_goals FROM team_box_scores WHERE team = 'LOS ANGELES LAKERS' AND made_three_point_field_goals >= 10 AND EXTRACT(YEAR FROM game_date) = 2023;
+\`\`\`
+
+8. Compare three point statistics between Damian Lillard and Stephen Curry:
 \`\`\`sql
 -- If the query is about comparing two players, return two queries, one for each player
 -- Query for Damian Lillard's three point statistics
@@ -462,9 +494,9 @@ ORDER BY
     season_year DESC;
 \`\`\`
 
-8. Show me steph curry's 3 point statistics for games agains the rockets in 2022-2023
+9. Show me steph curry's 3 point statistics for games agains the rockets in 2022-2023
 \`\`\`sql
--- NOTE: If the query is about a one or more games and we query the box scores table, we need to filter between the start and end of the season, typically starting no earlier than September 15th and ending no later than June 31st
+-- NOTE: If the query is about a one or more games and we query the box scores table, we need to filter between the start and end of the season, typically starting no earlier than September 15th and ending no later than July 1st
 SELECT 
     name,
     game_date,
@@ -474,11 +506,11 @@ FROM
     player_box_scores
 WHERE 
     name = 'Stephen Curry'
-    AND opponent = 'Houston Rockets'
-    AND game_date BETWEEN '2022-09-15' AND '2023-06-31';
+    AND opponent = 'HOUSTON ROCKETS'
+    AND game_date BETWEEN '2022-09-15' AND '2023-07-01';
 \`\`\`
 
-9. Show me steph curry's total 3 point statistics for the 2022-2023 season
+10. Show me steph curry's total 3 point statistics for the 2022-2023 season
 \`\`\`sql
 -- NOTE: If the query is about one or more seasons and we don't need box scores, we query the season totals table. In this case, we filter by season_year. If the user provides phrases it as '2022-2023 season', we should filter by season_year = '2023'. If they phrase is as '2022 and 2023 seasons', we should filter by season_year IN ('2022', '2023').
 SELECT 
