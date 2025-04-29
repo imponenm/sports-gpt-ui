@@ -7,8 +7,17 @@ import { useChat } from "@ai-sdk/react"
 import { ArrowUpIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select"
+import { useState } from "react"
 
 export function ChatForm({ className, ...props }: React.ComponentProps<"form">) {
+  const [selectedSport, setSelectedSport] = useState("basketball")
   const { messages, input, setInput, append } = useChat({
     api: "/api/chat",
   })
@@ -30,8 +39,20 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
       <h1 className="text-2xl font-semibold leading-none tracking-tight">Sports GPT</h1>
       <p className="text-muted-foreground text-md">
-        A chatbot that has been fine-tuned to provide accurate for sports data.
+        A chatbot that has been fine-tuned to provide accurate sports data.
       </p>
+      <div className="w-48 mx-auto">
+        <Select value={selectedSport} onValueChange={setSelectedSport}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a sport" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="basketball">Basketball</SelectItem>
+            <SelectItem value="football" disabled>Football (Coming Soon)</SelectItem>
+            <SelectItem value="baseball" disabled>Baseball (Coming Soon)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </header>
   )
 
