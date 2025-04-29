@@ -1,0 +1,1309 @@
+select * from users;
+insert into users (email) VALUES ('foo@test.com');
+select * from users;
+update users set auth0_user_id = 'auth0|671be58496b715320a9e85a1' where id = 1;
+CREATE TABLE Organizations (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+\d users
+\d users
+CREATE TABLE VoiceAssistants (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(255),
+    organization_id INTEGER REFERENCES Organizations(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE Users
+ADD COLUMN organization_id INTEGER,
+ADD CONSTRAINT fk_organization
+FOREIGN KEY (organization_id) REFERENCES Organizations(id) ON DELETE SET NULL;
+\d
+\d users
+\d organizations
+\d users
+select * from users;
+DROP TABLE users;
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    auth0_user_id VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    organization_id INTEGER REFERENCES Organizations(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+insert into users (auth0_user_id, email) VALUES ('auth0|671be58496b715320a9e85a1', 'foo@test.com');
+select * from users;
+delete from users where id = 1;
+select * from users;
+select * From organizations;
+select * From organizations;
+\d organizations
+insert into organizations 'Larry''s Lawncare';
+insert into organizations (name) VALUES ('Larry''s Lawncare');
+git push
+;
+select * from organizations;
+select * from users;
+update users set organization_id = 1 where id = 2;
+select * from users;
+\d
+\d voiceassistants
+select * from voice assistants;
+select * from voiceassistants;
+alter table voiceassistants add column vapi_id TEXT;
+select * from voiceassistants;
+insert into voiceassistants (name, organization_id, vapi_id) VALUES ('Larry''s Lawncare', 1, '88235c0f-94ce-4d56-8c70-38f46c1073c2');
+select * from voiceassistants;
+INSERT INTO voiceassistants VALUES (id, name, organization_id) VALUES ('88235c0f-94ce-4d56-8c70-38f46c1073c2', 'Larry''s Lawncare', 1);
+INSERT INTO voiceassistants (id, name, organization_id) VALUES ('88235c0f-94ce-4d56-8c70-38f46c1073c2', 'Larry''s Lawncare', 1);
+select * from voiceassistants;
+\d
+\d
+\d organizations
+\d voiceassistants
+CREATE TABLE phone_numbers (
+    id SERIAL PRIMARY KEY,
+    number VARCHAR(15) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE voiceassistant_phone_numbers (
+    voiceassistant_id VARCHAR(50) REFERENCES voiceassistants(id) ON DELETE CASCADE,
+    phone_number_id INTEGER REFERENCES phone_numbers(id) ON DELETE CASCADE,
+    PRIMARY KEY (voiceassistant_id, phone_number_id)
+);
+\d users
+\d phone_numbers
+insert into phone_numbers (number) VALUES ('333-333-3333');
+insert into phone_numbers (number) VALUES ('333-333-3333');
+select * from phone numbers;
+select * from phone_numbers;
+\d 
+\d voiceassistant_phone_numbers
+select * from voiceassistants;
+insert into voiceassistant_phone_numbers (voiceassistant_id, phone_number_id) VALUES ('88235c0f-94ce-4d56-8c70-38f46c1073c2', '1');
+select * from users;
+SELECT pn.number
+FROM users u
+JOIN organizations o ON u.organization_id = o.id
+JOIN voiceassistants va ON va.organization_id = o.id
+JOIN voiceassistant_phone_numbers vapn ON vapn.voiceassistant_id = va.id
+JOIN phone_numbers pn ON pn.id = vapn.phone_number_id
+WHERE u.auth0_user_id = 'auth0|671be58496b715320a9e85a1';
+SELECT pn.number, pn.id
+FROM users u
+JOIN organizations o ON u.organization_id = o.id
+JOIN voiceassistants va ON va.organization_id = o.id
+JOIN voiceassistant_phone_numbers vapn ON vapn.voiceassistant_id = va.id
+JOIN phone_numbers pn ON pn.id = vapn.phone_number_id
+WHERE u.auth0_user_id = 'auth0|671be58496b715320a9e85a1;
+
+
+
+'
+;
+SELECT pn.number, pn.id
+FROM users u
+JOIN organizations o ON u.organization_id = o.id
+JOIN voiceassistants va ON va.organization_id = o.id
+JOIN voiceassistant_phone_numbers vapn ON vapn.voiceassistant_id = va.id
+JOIN phone_numbers pn ON pn.id = vapn.phone_number_id
+WHERE u.auth0_user_id = 'auth0|671be58496b715320a9e85a1';
+\d
+\d
+\d users
+\d voiceassistants;
+select * from users;
+select * from users;
+\d users
+\d users
+select * from users;
+select * from users;
+update users set organization_id = 1 where id = 3;
+select * from users;
+select * from users;
+select * from users;
+update users set organization_id = 1 where id = 4;
+\d 
+\d
+\d voiceassistants
+\d organizations
+\d users
+select * from voiceassistants;
+select * from voiceassistants;
+\d
+select * from users;
+delete from users where id = 2;
+delete from users where id = 3;
+\d
+\d
+\d voiceassistants
+select * from voiceasssitants;
+select * from voiceasssistants;
+select * from voiceassistants;
+update voiceassistants set name = 'Larry''s Lawncare - GreensKeeper Demo' where id = '88235c0f-94ce-4d56-8c70-38f46c1073c2';
+SELECT u.*
+    FROM users u
+    JOIN voiceassistants v ON u.organization_id = v.organization_id
+    WHERE v.name = 'Larry''s Lawncare - GreensKeeper Demo';
+select * from users;
+select * from users;
+select * from users;
+select * from organizations;
+insert into organizations (name) values ('Larry''s Lawncare 2');
+select * from organizations;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+\list
+\list
+CREATE DB eroticplotbot
+;
+CREATE DATABASE eroticplotbot;
+\c eroticplotbot
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    auth0_user_id VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    auth0_user_id VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAT(255),
+    auth0_user_id VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAT(255),
+    auth0_user_id VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255),
+    auth0_user_id VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE companions (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    age INT,
+    description TEXT,
+    voice VARCHAR(50),
+    llm_model VARCHAR(100),
+    lang VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE conversations (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    companion_id INT REFERENCES companions(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+DROP TABLE users;
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+    sender_type VARCHAR(50) CHECK (sender_type IN ('user', 'companion')),
+    message TEXT NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE OR REPLACE FUNCTION update_modified_at()
+RETURNS TRIGGER AS $$
+BEGIN
+   NEW.modified_at = CURRENT_TIMESTAMP;
+   RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_modified_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_modified_at();
+ALTER TABLE companions
+RENAME COLUMN llm_model TO text_model;
+ALTER TABLE companions
+ADD COLUMN image_model VARCHAR(100);
+select * from companions;
+CREATE TABLE conversation_companions (
+    id SERIAL PRIMARY KEY,
+    conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+    companion_id INT REFERENCES companions(id) ON DELETE CASCADE
+);
+ALTER TABLE conversations
+DROP COLUMN companion_id;
+\d
+INSERT INTO companions (name, age, description, voice, text_model, image_model, language, created_at)
+VALUES
+('Sophia', 28, 'An empathetic and knowledgeable assistant with a calm demeanor.', 'calm_female', 'gpt-4', 'dalle-2', 'English', CURRENT_TIMESTAMP),
+('Emma', 25, 'A friendly and cheerful companion who loves to help with creative tasks.', 'cheerful_female', 'gpt-4', 'stablediffusion', 'English', CURRENT_TIMESTAMP),
+('Isabella', 30, 'A multilingual expert, fluent in Spanish and English.', 'warm_female', 'gpt-4', NULL, 'Spanish', CURRENT_TIMESTAMP),
+('Ava', 22, 'A young and enthusiastic conversational partner for all topics.', 'dynamic_female', 'gpt-3.5', 'midjourney', 'English', CURRENT_TIMESTAMP),
+('Mia', 27, 'A companion with a soothing voice, ideal for relaxation and focus.', 'soothing_female', 'gpt-4', NULL, 'English', CURRENT_TIMESTAMP),
+('Charlotte', 34, 'A professional and analytical thinker, great for advice.', 'professional_female', 'gpt-4', 'dalle-2', 'English', CURRENT_TIMESTAMP),
+('Amelia', 29, 'An artistic soul, passionate about art and culture.', 'artsy_female', 'gpt-4', 'stablediffusion', 'English', CURRENT_TIMESTAMP),
+('Olivia', 31, 'An adventure-seeker who loves storytelling.', 'storyteller_female', 'gpt-4', NULL, 'English', CURRENT_TIMESTAMP),
+('Harper', 26, 'A tech-savvy AI with a modern and futuristic vibe.', 'tech_female', 'gpt-4', 'dalle-2', 'English', CURRENT_TIMESTAMP),
+('Evelyn', 33, 'A nurturing companion, ideal for advice on well-being.', 'nurturing_female', 'gpt-4', 'stablediffusion', 'English', CURRENT_TIMESTAMP),
+('Luna', 24, 'A dreamy and imaginative AI perfect for creative projects.', 'dreamy_female', 'gpt-4', 'midjourney', 'English', CURRENT_TIMESTAMP);
+INSERT INTO companions (name, age, description, voice, text_model, image_model, lang, created_at)
+VALUES
+('Sophia', 28, 'An empathetic and knowledgeable assistant with a calm demeanor.', 'calm_female', 'gpt-4', 'dalle-2', 'English', CURRENT_TIMESTAMP),
+('Emma', 25, 'A friendly and cheerful companion who loves to help with creative tasks.', 'cheerful_female', 'gpt-4', 'stablediffusion', 'English', CURRENT_TIMESTAMP),
+('Isabella', 30, 'A multilingual expert, fluent in Spanish and English.', 'warm_female', 'gpt-4', NULL, 'Spanish', CURRENT_TIMESTAMP),
+('Ava', 22, 'A young and enthusiastic conversational partner for all topics.', 'dynamic_female', 'gpt-3.5', 'midjourney', 'English', CURRENT_TIMESTAMP),
+('Mia', 27, 'A companion with a soothing voice, ideal for relaxation and focus.', 'soothing_female', 'gpt-4', NULL, 'English', CURRENT_TIMESTAMP),
+('Charlotte', 34, 'A professional and analytical thinker, great for advice.', 'professional_female', 'gpt-4', 'dalle-2', 'English', CURRENT_TIMESTAMP),
+('Amelia', 29, 'An artistic soul, passionate about art and culture.', 'artsy_female', 'gpt-4', 'stablediffusion', 'English', CURRENT_TIMESTAMP),
+('Olivia', 31, 'An adventure-seeker who loves storytelling.', 'storyteller_female', 'gpt-4', NULL, 'English', CURRENT_TIMESTAMP),
+('Harper', 26, 'A tech-savvy AI with a modern and futuristic vibe.', 'tech_female', 'gpt-4', 'dalle-2', 'English', CURRENT_TIMESTAMP),
+('Evelyn', 33, 'A nurturing companion, ideal for advice on well-being.', 'nurturing_female', 'gpt-4', 'stablediffusion', 'English', CURRENT_TIMESTAMP),
+('Luna', 24, 'A dreamy and imaginative AI perfect for creative projects.', 'dreamy_female', 'gpt-4', 'midjourney', 'English', CURRENT_TIMESTAMP);
+select * from users;
+INSERT INTO users (auth0_user_id, email, created_at, modified_at)
+VALUES ('auth0|123456789', 'marcus.imponenti@gmail.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+\d
+select * from conversations;
+select * from messages;
+INSERT INTO conversations (user_id, created_at)
+VALUES (1, CURRENT_TIMESTAMP)
+RETURNING id;
+INSERT INTO conversation_companions (conversation_id, companion_id)
+VALUES (1, 1);
+INSERT INTO messages (conversation_id, sender_type, message, sent_at)
+VALUES 
+(1, 'user', 'Hi Sophia! Can you help me with my daily schedule?', CURRENT_TIMESTAMP),
+(1, 'assistant', 'Of course! What do you have planned for today?', CURRENT_TIMESTAMP),
+(1, 'user', 'I need to prioritize my tasks. I have work, gym, and grocery shopping.', CURRENT_TIMESTAMP),
+(1, 'assistant', 'Got it. I suggest starting with work, followed by a quick gym session, and ending with grocery shopping. Does that work for you?', CURRENT_TIMESTAMP);
+\d messages
+ALTER TABLE messages
+DROP CONSTRAINT messages_sender_type_check;
+ALTER TABLE messages
+ADD CONSTRAINT messages_sender_type_check
+CHECK (sender_type::text = ANY (ARRAY['user', 'assistant']::text[]));
+INSERT INTO messages (conversation_id, sender_type, message, sent_at)
+VALUES 
+(1, 'user', 'Hi Sophia! Can you help me with my daily schedule?', CURRENT_TIMESTAMP),
+(1, 'assistant', 'Of course! What do you have planned for today?', CURRENT_TIMESTAMP),
+(1, 'user', 'I need to prioritize my tasks. I have work, gym, and grocery shopping.', CURRENT_TIMESTAMP),
+(1, 'assistant', 'Got it. I suggest starting with work, followed by a quick gym session, and ending with grocery shopping. Does that work for you?', CURRENT_TIMESTAMP);
+\list
+\u
+\users
+\du
+SELECT c.id AS conversation_id, c.created_at
+FROM conversations c
+JOIN users u ON u.id = c.user_id
+WHERE u.auth0_user_id = 'auth0|123456789';
+select * From users;
+\d conversations
+\d companions
+ALTER TABLE companions
+ADD COLUMN image_url TEXT;
+select * from companions;
+update companions set image_url = 'https://placeholder-test-45.com/image1' where id = 1;
+select * from users;
+update users set auth0_user_id = 'google-oauth2|114530407898510776516' where id = 1;
+\d
+\d isers
+\d
+\d users
+\d companions
+\d conversations
+\d messages
+\d users
+select * from users;
+select * From companions;
+UPDATE companions SET name = 'Dominica', age = 32, description = 'Confident and assertive dominatrix with a passion for BDSM, spanking, and 
+bondage' WHERE id = 1;
+UPDATE companions SET name = 'Nurse Nina', age = 28, description = 'Caring and nurturing nurse who enjoys roleplaying, foot fetishes, and being 
+tied up' WHERE id = 2;
+UPDATE companions SET name = 'Professor Playful', age = 25, description = 'Intelligent and playful teacher who enjoys anal play, bondage, and 
+blindfolds' WHERE id = 3;
+UPDATE companions SET name = 'Sensual Sienna', age = 30, description = 'Creative and sensual artist who enjoys art-themed roleplay, body 
+painting, and sensory deprivation' WHERE id = 4;
+UPDATE companions SET name = 'Ambitious Amelia', age = 29, description = 'Ambitious and confident lawyer who enjoys power dynamics, spanking, 
+and humiliation' WHERE id = 5;
+UPDATE companions SET name = 'Compassionate Chloe', age = 34, description = 'Caring and compassionate doctor who enjoys medical roleplay, being 
+tied up, and blindfolds' WHERE id = 6;
+UPDATE companions SET name = 'Passionate Piper', age = 27, description = 'Passionate and sensual chef who enjoys food-themed roleplay, tasting 
+games, and bondage' WHERE id = 7;
+UPDATE companions SET name = 'Dominant Darcy', age = 31, description = 'Introverted and creative writer who enjoys BDSM, spanking, and 
+domination' WHERE id = 8;
+UPDATE companions SET name = 'Energetic Ellie', age = 26, description = 'Energetic and playful musician who enjoys roleplaying, foot fetishes, 
+and being tied up' WHERE id = 9;
+UPDATE companions SET name = 'Confident Chloe', age = 24, description = 'Confident and outgoing model who enjoys BDSM, spanking, and bondage' 
+WHERE id = 10;
+UPDATE companions SET name = 'Sensual Stella', age = 33, description = 'Sensual and playful dancer who enjoys body painting, blindfolds, and 
+sensory deprivation' WHERE id = 11;
+select * from companions;
+BEGIN TRANSACTION;
+SELECT CASE
+           WHEN position(' ' IN your_column) > 0 THEN 
+               split_part(your_column, ' ', array_length(string_to_array(your_column, ' '), 1))
+           ELSE 
+               your_column
+       END AS last_word
+FROM your_table;
+\c eroticplotbot
+SELECT CASE
+           WHEN position(' ' IN your_column) > 0 THEN 
+               split_part(your_column, ' ', array_length(string_to_array(your_column, ' '), 1))
+           ELSE 
+               your_column
+       END AS last_word
+FROM companions;
+SELECT CASE
+           WHEN position(' ' IN name) > 0 THEN 
+               split_part(name, ' ', array_length(string_to_array(name, ' '), 1))
+           ELSE 
+               name
+       END AS last_word
+FROM companions;
+select * from companions;
+BEGIN TRANSACTION;
+UPDATE companions
+SET name = CASE
+               WHEN position(' ' IN name) > 0 THEN 
+                   split_part(name, ' ', array_length(string_to_array(name, ' '), 1))
+               ELSE 
+                   name
+           END;
+COMMIT;
+select * from companions;
+\d conversations
+\d
+\d conversations
+\d messages
+\d companions
+BEGIN TRANSACTION
+;
+-- Insert three new conversations
+INSERT INTO conversations (user_id, created_at) VALUES
+(1, CURRENT_TIMESTAMP - INTERVAL '1 day'),
+(1, CURRENT_TIMESTAMP - INTERVAL '2 days'),
+(1, CURRENT_TIMESTAMP - INTERVAL '3 days');
+
+-- Retrieve the conversation IDs for the new conversations
+WITH new_conversations AS (
+    SELECT id FROM conversations WHERE user_id = 1 ORDER BY created_at DESC LIMIT 3
+)
+-- Insert messages for each conversation
+INSERT INTO messages (conversation_id, sender_type, message, sent_at) VALUES
+-- Messages for the most recent conversation
+((SELECT id FROM new_conversations LIMIT 1 OFFSET 0), 'user', 'Hi there! What can you do?', CURRENT_TIMESTAMP - INTERVAL '1 day'),
+((SELECT id FROM new_conversations LIMIT 1 OFFSET 0), 'assistant', 'I can help with creating stories, answering questions, and more!', CURRENT_TIMESTAMP - INTERVAL '1 day'),
+
+-- Messages for the second most recent conversation
+((SELECT id FROM new_conversations LIMIT 1 OFFSET 1), 'user', 'Can you write a plot idea?', CURRENT_TIMESTAMP - INTERVAL '2 days'),
+((SELECT id FROM new_conversations LIMIT 1 OFFSET 1), 'assistant', 'Of course! What genre do you have in mind?', CURRENT_TIMESTAMP - INTERVAL '2 days'),
+
+-- Messages for the third most recent conversation
+((SELECT id FROM new_conversations LIMIT 1 OFFSET 2), 'user', 'What is the most popular story trope?', CURRENT_TIMESTAMP - INTERVAL '3 days'),
+((SELECT id FROM new_conversations LIMIT 1 OFFSET 2), 'assistant', 'The hero’s journey is a timeless favorite!', CURRENT_TIMESTAMP - INTERVAL '3 days');
+select * from messages;
+COMMIT;
+select * from messages;
+select * from conversations;
+select * from users;
+SELECT 
+    c.id AS conversation_id, 
+    c.created_at, 
+    JSON_AGG(co.image_url) AS companion_image_urls
+  FROM conversations c
+  JOIN users u ON u.id = c.user_id
+  JOIN conversation_companions cc ON cc.conversation_id = c.id
+  JOIN companions co ON co.id = cc.companion_id
+  WHERE u.auth0_user_id = 'google-oauth2|114530407898510776516'
+  GROUP BY c.id;
+select * from conversations where user_id = 1;
+select * From conversations;
+SELECT 
+    c.id AS conversation_id, 
+    c.created_at, 
+    JSON_AGG(co.image_url) FILTER (WHERE co.image_url IS NOT NULL) AS companion_image_urls
+FROM conversations c
+JOIN users u ON u.id = c.user_id
+LEFT JOIN conversation_companions cc ON cc.conversation_id = c.id
+LEFT JOIN companions co ON co.id = cc.companion_id
+WHERE u.auth0_user_id = 'google-oauth2|114530407898510776516'
+GROUP BY c.id
+ORDER BY c.created_at DESC;
+\d companions;
+select * from companions;
+update companions set image_url = "/face.jpg" where id = 1;
+update companions set image_url = '/face.jpg' where id = 1;
+\d
+\d
+\d users
+\d companions
+\d conversations
+\d conversation_companions
+select * from users;
+SELECT 
+    c.id AS conversation_id, 
+    c.created_at, 
+    JSON_AGG(DISTINCT co.image_url) FILTER (WHERE co.image_url IS NOT NULL) AS companion_image_urls,
+    JSON_AGG(DISTINCT co.text_model) FILTER (WHERE co.text_model IS NOT NULL) AS text_models,
+    JSON_AGG(DISTINCT co.image_model) FILTER (WHERE co.image_model IS NOT NULL) AS image_models
+FROM conversations c
+JOIN users u ON u.id = c.user_id
+LEFT JOIN conversation_companions cc ON cc.conversation_id = c.id
+LEFT JOIN companions co ON co.id = cc.companion_id
+WHERE u.auth0_user_id = 'google-oauth2|114530407898510776516'
+GROUP BY c.id
+ORDER BY c.created_at DESC;
+const query = `
+  SELECT 
+    c.id AS conversation_id, 
+    c.created_at, 
+    JSON_AGG(co.image_url) FILTER (WHERE co.image_url IS NOT NULL) AS companion_image_urls,
+    JSON_AGG(co.name) FILTER (WHERE co.name IS NOT NULL) AS companion_names
+  FROM conversations c
+  JOIN users u ON u.id = c.user_id
+  LEFT JOIN conversation_companions cc ON cc.conversation_id = c.id
+  LEFT JOIN companions co ON co.id = cc.companion_id
+  WHERE u.auth0_user_id = 'google-oauth2|114530407898510776516'
+  GROUP BY c.id
+  ORDER BY c.created_at DESC;
+`;
+SELECT 
+    c.id AS conversation_id, 
+    c.created_at, 
+    JSON_AGG(co.image_url) FILTER (WHERE co.image_url IS NOT NULL) AS companion_image_urls,
+    JSON_AGG(co.name) FILTER (WHERE co.name IS NOT NULL) AS companion_names
+  FROM conversations c
+  JOIN users u ON u.id = c.user_id
+  LEFT JOIN conversation_companions cc ON cc.conversation_id = c.id
+  LEFT JOIN companions co ON co.id = cc.companion_id
+  WHERE u.auth0_user_id = 'google-oauth2|114530407898510776516'
+  GROUP BY c.id
+  ORDER BY c.created_at DESC;
+\d messages
+\d messages
+\d conversations
+\d users
+select * from conversations;
+select * from messages;
+\d
+\d users
+\d companions
+\d conversation_companions
+\d conversations
+\d messages
+select * from conversatoins;
+select * from conversatoins
+select * from conversations;
+select * from conversations;
+select * from conversations;
+\d messages
+ALTER TABLE messages DROP CONSTRAINT messages_sender_type_check;
+ALTER TABLE messages ADD CONSTRAINT messages_sender_type_check 
+CHECK (sender_type IN ('user', 'assistant', 'system'));
+select * from conversations;
+select * from conversations;
+select * from conversations;
+select * from conversations;
+\d conversations
+\d companions
+\d messages
+\d
+\d users
+\d companions
+\d conversation_companions
+\d conversations
+\d messages
+ALTER TABLE conversations ADD COLUMN companions_list TEXT;
+UPDATE conversations
+SET companions_list = subquery.companion_ids
+FROM (
+    SELECT 
+        conversation_id, 
+        STRING_AGG(companion_id::TEXT, ',') AS companion_ids
+    FROM conversation_companions
+    GROUP BY conversation_id
+) AS subquery
+WHERE conversations.id = subquery.conversation_id;
+select * from conversations;
+select * from companions;
+DROP TABLE conversation_companions;
+select * from companions;
+\d companions
+\d
+\d users
+\d companions
+\d conversations
+\d messages
+select * from users
+select * From conversations;
+select * from companions;
+select * from conversations WHERE user_id
+select * from users;
+\d
+\d companions
+\d conversations
+\d messages
+\d users
+select * from users;
+SELECT 
+    conversations.id AS conversation_id,
+    conversations.created_at AS conversation_created_at,
+    companions.image_url AS companion_image_url,
+    companions.name AS companion_name
+FROM 
+    users
+INNER JOIN 
+    conversations ON users.id = conversations.user_id
+LEFT JOIN 
+    companions ON conversations.companions_list::integer = companions.id
+WHERE 
+    users.auth0_user_id = 'google-oauth2|114530407898510776516';
+\d conversations
+select * From companions;
+select * From conversations;
+select * From messages;
+\d messages
+select * From conversations;
+select * from messages where conversation_id = 2;
+select * from messages where conversation_id = 7;
+\d conversations
+ALTER TABLE conversations
+ADD CONSTRAINT user_id_companions_list_unique
+UNIQUE (user_id, companions_list);
+select * from conversations;
+delete from conversations where id = 8;
+ALTER TABLE conversations
+ADD CONSTRAINT user_id_companions_list_unique
+UNIQUE (user_id, companions_list);
+select * from conversations;
+select * from conversations;
+delete from conversations where id = 2;
+delete from conversations where id = 3;
+delete from conversations where id = 4;
+select * from conversations;
+select * from messages where conversation_id = 10;
+select * from conversations;
+select * from conversations;
+select * from messages where conversation_id = 12;
+select * from conversations;
+select * from conversations;
+select * from messages where conversation_id = 15;
+select * from conversations;
+select * from messages where conversation_id = 16;
+select * from conversations;
+delete from conversations where id = 16;
+select * from messages where conversation_id = 16;
+delete from conversations where id = 15;
+delete from conversations where id = 12;
+delete from conversations where id = 10;
+delete from conversations where id = 9;
+delete from conversations where id = 7;
+select * from conversations;
+select * from messages where conversation_id = 18;
+select * from messages where conversation_id = 18;
+\d conversations
+\d companions
+select * from users;
+select ( from companions;
+'
+)
+'
+)
+;
+select * from companions;
+SELECT c.id AS conversation_id, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 'google-oauth2|114530407898510776516'
+        AND c.companions_list = 1
+      LIMIT 1;
+SELECT c.id AS conversation_id, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 1
+        AND c.companions_list = 1
+      LIMIT 1;
+SELECT c.id AS conversation_id, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 1
+        AND c.companions_list = '1'
+      LIMIT 1;
+select id, name, description from companions;
+select * from conversations;
+delete from conversations where id >= 19;
+select * From conversations;
+delete from conversations where id >= 19;
+\d messages
+\d conversations
+\d companions
+\
+select * from conversations;
+select * from messages where id = 43;
+select name from companions where id = 5;
+select * from messages where id = 43;
+\d messages
+select * from messages where conversation_id = 43;
+select * from messages where conversation_id = 43 ORDER BY sent_at DESC;
+select * from convresations;
+select * from conversations;
+select from conversations where id >= 1;
+delete from conversations where id >= 1;
+select * From messages;
+beam configure default --token KuMr6re_SrPhrqFlMN_pt1Fn1HsJlxTzp73F-rBYoKWWoLQ3kSUCB6f9dcnNQGVqBKHTKz0QOJ3GJNOhhe34vg==
+;
+\d users
+ALTER TABLE users
+ADD COLUMN is_user_paid BOOLEAN DEFAULT FALSE,
+ADD COLUMN tokens INTEGER DEFAULT 25,
+ADD COLUMN monthly_text_limit INTEGER DEFAULT 100;
+select * from users;
+ALTER TABLE users
+ALTER COLUMN tokens TYPE NUMERIC(10, 2) USING tokens::NUMERIC(10, 2);
+select * from users;
+\d users
+select * from users
+;
+\d users
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+select * from users;
+update userss set tokens = 23.00 where id = 1;
+update users set tokens = 23.00 where id = 1;
+select * from users;
+\d users
+select * from conversations;
+select * From messages;
+select * From users;
+SELECT c.id AS conversation_id, c.companions_list, comp.name, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 'google-oauth2|114530407898510776516'
+        AND c.companions_list = 45
+      LIMIT 1;
+SELECT c.id AS conversation_id, c.companions_list, comp.name, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 'google-oauth2|114530407898510776516'
+        AND c.companions_list = 45
+      LIMIT 1;
+select * from conversations;
+\d companions
+\d conversations
+SELECT c.id AS conversation_id, c.companions_list, comp.name, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 'google-oauth2|114530407898510776516'
+        AND c.companions_list = '45'
+      LIMIT 1;
+SELECT c.id AS conversation_id, c.companions_list, comp.name, comp.description, comp.voice
+FROM conversations c
+JOIN companions comp ON comp.id = c.companions_list::int
+WHERE c.user_id = 'google-oauth2|114530407898510776516'  -- Assuming c.user_id is a string or text
+  AND c.companions_list::int = 45  -- Assuming c.companions_list contains valid integers
+LIMIT 1;
+\d users
+\d conversations
+\d companions
+SELECT c.id AS conversation_id, c.companions_list, comp.name, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 1
+        AND c.companions_list = '45'
+      LIMIT 1;
+select * from conversations;
+select * from users;
+select * from companions;
+SELECT c.id AS conversation_id, c.companions_list, comp.name, comp.description, comp.voice
+      FROM conversations c
+      JOIN companions comp ON comp.id = c.companions_list::int
+      WHERE c.user_id = 1
+        AND c.id = '45'
+      LIMIT 1;
+\d users
+\d companions
+\d conversations
+select * from users;
+SELECT 
+    conversations.id AS conversation_id,
+    conversations.created_at AS conversation_created_at,
+    conversations.companions_list::integer AS companion_id,
+    companions.image_url AS companion_image_url,
+    companions.name AS companion_name
+FROM 
+    users
+INNER JOIN 
+    conversations ON users.id = conversations.user_id
+LEFT JOIN 
+    companions ON conversations.companions_list::integer = companions.id
+WHERE 
+    users.auth0_user_id = 'google-oauth2|114530407898510776516';
+\d conversations
+select * from conversations;
+select * from messages where id = 61;
+select * from messages where conversation_id = 61;
+select * from companions;
+\d companions
+update companions set name = 'Penny' where name = 'Playful';
+update companions set description = 'Passionate and sexy hip hop artist who is into anything and everything' where name = 'Piper';
+select * from companions;
+update companions set name = 'Claire' where id = 10;
+select * from companions;
+update companions set image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/amelia.jpg' where name = 'Amelia';
+update companions set image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/chloe.jpg' where name = 'Chloe';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/nina.jpg' WHERE name = 'Nina';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/sienna.jpg' WHERE name = 'Sienna';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/darcy.jpg' WHERE name = 'Darcy';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/ellie.jpg' WHERE name = 'Ellie';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/stella.jpg' WHERE name = 'Stella';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/dominica.jpg' WHERE name = 'Dominica';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/penny.jpg' WHERE name = 'Penny';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/piper.jpg' WHERE name = 'Piper';
+UPDATE companions SET image_url = 'https://epl-site-images.s3.us-east-2.amazonaws.com/claire.jpg' WHERE name = 'Claire';
+select * from companions;
+\d users
+ALTER TABLE users
+ADD CONSTRAINT users_email_key UNIQUE (email);
+ALTER TABLE users
+DROP CONSTRAINT users_email_key;
+select * from users;
+select * from conversations;
+delete from conversations where id >= 54;
+select * from conversations;
+select * from messages where id = 72;
+select * from conversations;
+select * from messages where conversationid = 72;
+select * from messages where conversation_id = 72;
+CREATE TABLE websocket_connections (
+    id SERIAL PRIMARY KEY,
+    connection_id TEXT NOT NULL,
+    connected_at TIMESTAMP DEFAULT NOW()
+);
+select * from conversations;
+sleect * from messages where conversation_id = 75;
+select * from messages where conversation_id = 75;
+select * from conversations;
+delete from conversations where id > 49;
+select * from conversations;
+select * from messages where conversation_id = 79;
+select * from conversations;
+select * from messages where conversation_id = 80;
+select * from conversations;
+select * from messages where conversation_id = 81;
+\d messages
+select * from users;
+\d
+\d users
+ALTER TABLE users ADD CONSTRAINT unique_email UNIQUE (email);
+ALTER TABLE users DROP CONSTRAINT unique_email UNIQUE (email);
+ALTER TABLE users DROP CONSTRAINT unique_email;
+select * from companions;
+select * from users;
+update users set tokens = .10 where id = 1;
+select * from users;
+CREATE DB diamondhandsdigest
+;
+CREATE DATABASE diamondhandsdigest
+;
+\c diamondhandsdigest 
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,                     -- Auto-incrementing unique identifier
+    email VARCHAR(255) UNIQUE NOT NULL,       -- Email address, must be unique
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Timestamp for user creation
+    last_login TIMESTAMP,                     -- Timestamp for the last login
+    last_reply TIMESTAMP,                     -- Timestamp for the last reply
+    is_subscribed BOOLEAN NOT NULL DEFAULT TRUE -- Subscription status, default to subscribed
+);
+drop table users;
+drop table users;
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,                     -- Auto-incrementing unique identifier
+    email VARCHAR(255) UNIQUE NOT NULL,       -- Email address, must be unique
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Timestamp for user creation
+    last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,                     -- Timestamp for the last login
+    last_reply TIMESTAMP,                     -- Timestamp for the last reply
+    is_subscribed BOOLEAN NOT NULL DEFAULT TRUE -- Subscription status, default to subscribed
+);
+drop table users;
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,                     -- Auto-incrementing unique identifier
+    email VARCHAR(255) UNIQUE NOT NULL,       -- Email address, must be unique
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Timestamp for user creation
+    last_login TIMESTAMP,                     -- Timestamp for the last login
+    last_reply TIMESTAMP,                     -- Timestamp for the last reply
+    is_subscribed BOOLEAN NOT NULL DEFAULT TRUE -- Subscription status, default to subscribed
+);
+\du
+drop table users;
+CREATE TABLE accounts
+  (
+    id                   SERIAL,
+    compound_id          VARCHAR(255) NOT NULL,
+    user_id              INTEGER NOT NULL,
+    provider_type        VARCHAR(255) NOT NULL,
+    provider_id          VARCHAR(255) NOT NULL,
+    provider_account_id  VARCHAR(255) NOT NULL,
+    refresh_token        TEXT,
+    access_token         TEXT,
+    access_token_expires TIMESTAMPTZ,
+    created_at           TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+  );
+
+CREATE TABLE sessions
+  (
+    id            SERIAL,
+    user_id       INTEGER NOT NULL,
+    expires       TIMESTAMPTZ NOT NULL,
+    session_token VARCHAR(255) NOT NULL,
+    access_token  VARCHAR(255) NOT NULL,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+  );
+
+CREATE TABLE users
+  (
+    id             SERIAL,
+    name           VARCHAR(255),
+    email          VARCHAR(255),
+    email_verified TIMESTAMPTZ,
+    image          TEXT,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+  );
+
+CREATE TABLE verification_requests
+  (
+    id         SERIAL,
+    identifier VARCHAR(255) NOT NULL,
+    token      VARCHAR(255) NOT NULL,
+    expires    TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+  );
+
+CREATE UNIQUE INDEX compound_id
+  ON accounts(compound_id);
+
+CREATE INDEX provider_account_id
+  ON accounts(provider_account_id);
+
+CREATE INDEX provider_id
+  ON accounts(provider_id);
+
+CREATE INDEX user_id
+  ON accounts(user_id);
+
+CREATE UNIQUE INDEX session_token
+  ON sessions(session_token);
+
+CREATE UNIQUE INDEX access_token
+  ON sessions(access_token);
+
+CREATE UNIQUE INDEX email
+  ON users(email);
+
+CREATE UNIQUE INDEX token
+  ON verification_requests(token);
+\du
+\d diamondhandsdigest
+\d
+select * from users;
+DROP TABLE accounts;
+DROP TABLE sessions;
+DROP TABLE users;
+DROP TABLE verification_requests;
+\d
+CREATE TABLE verification_token
+(
+  identifier TEXT NOT NULL,
+  expires TIMESTAMPTZ NOT NULL,
+  token TEXT NOT NULL,
+ 
+  PRIMARY KEY (identifier, token)
+);
+ 
+CREATE TABLE accounts
+(
+  id SERIAL,
+  "userId" INTEGER NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  provider VARCHAR(255) NOT NULL,
+  "providerAccountId" VARCHAR(255) NOT NULL,
+  refresh_token TEXT,
+  access_token TEXT,
+  expires_at BIGINT,
+  id_token TEXT,
+  scope TEXT,
+  session_state TEXT,
+  token_type TEXT,
+ 
+  PRIMARY KEY (id)
+);
+ 
+CREATE TABLE sessions
+(
+  id SERIAL,
+  "userId" INTEGER NOT NULL,
+  expires TIMESTAMPTZ NOT NULL,
+  "sessionToken" VARCHAR(255) NOT NULL,
+ 
+  PRIMARY KEY (id)
+);
+ 
+CREATE TABLE users
+(
+  id SERIAL,
+  name VARCHAR(255),
+  email VARCHAR(255),
+  "emailVerified" TIMESTAMPTZ,
+  image TEXT,
+ 
+  PRIMARY KEY (id)
+);
+ 
+select * from users;
+\d
+select * from accounts;
+select * From users;
+select * From users;
+CREATE TABLE subscriptions (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    user_id UUID, -- optional, links to users.id
+    subscription_type VARCHAR(50) DEFAULT 'free',
+    subscribed_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE subscriptions (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    user_id INT, -- optional, links to users.id
+    subscription_type VARCHAR(50) DEFAULT 'free',
+    subscribed_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+drop table subscriptions;
+CREATE TABLE subscriptions (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    user_id INT, -- optional, links to users.id
+    subscription_type VARCHAR(50) NOT NULL CHECK (subscription_type IN ('free_weekly', 'paid_daily')),
+    subscribed_at TIMESTAMP DEFAULT NOW(),
+    expires_at TIMESTAMP, -- Optional for tracking paid subscriptions
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+\c eroticplotbot
+\d companions;
+select * from companions;
+select * from users;
+select * from conversations;
+select * from companions where id = 1;
+\d companions
+insert into companions (name, age, description, voice, lang, character_style, personality, occupation, hair_color, eye_color, ethnicity, body_type, breast_size, butt_size, s3_image_url) VALUES ('Joy', 22, 'A sweet and caring nurse', 'e3827ec5-697a-4b7c-9704-1a23041bbc51', 'English', 'Realistic', 'A sweet and caring nurse', 'Nurse', 'Brunette', 'Green', 'white', 'petite', 'small', 'small', 'https://epl-site-images.s3.us-east-2.amazonaws.com/joy.jpg');
+insert into companions (name, age, description, voice, lang, character_style, occupation, hair_color, eye_color, ethnicity, body_type, breast_size, butt_size, s3_image_url) VALUES ('Joy', 22, 'A sweet and caring nurse', 'e3827ec5-697a-4b7c-9704-1a23041bbc51', 'English', 'Realistic', 'Nurse', 'Brunette', 'Green', 'white', 'petite', 'small', 'small', 'https://epl-site-images.s3.us-east-2.amazonaws.com/joy.jpg');
+insert into companions (name, age, description, voice, lang, character_style, occupation, hair_color, eye_color, ethnicity, body_type, breast_size, butt_size, s3_image_url) VALUES ('Joy', 22, 'A sweet and caring nurse', 'e3827ec5-697a-4b7c-9704-1a23041bbc51', 'English', 'Realistic', 'Nurse', 'Brunette', 'Green', ARRAY['white'], 'petite', 'small', 'small', 'https://epl-site-images.s3.us-east-2.amazonaws.com/joy.jpg');
+insert into companions (name, age, description, voice, lang, character_style, occupation, hair_color, eye_color, ethnicity, body_type, breast_size, butt_size, s3_image_url) VALUES ('Joy', 22, 'A sweet and caring nurse', 'e3827ec5-697a-4b7c-9704-1a23041bbc51', 'English', 'Realistic', 'Nurse', 'Brunette', 'Green', ARRAY['white'], 'petite', 'small', 'small', 'https://epl-site-images.s3.us-east-2.amazonaws.com/joy.jpg');
+select * from companions;
+delete from companions where id = 19;
+insert into companions (name, age, description, voice, lang, character_style, occupation, hair_color, eye_color, ethnicity, body_type, breast_size, butt_size, s3_image_url) VALUES ('Megan', 20, 'A college student that loves biology, likes to party, and is open to new experiences.', '21b81c14-f85b-436d-aff5-43f2e788ecf8', 'English', 'Realistic', 'Student', 'Black', 'Brown', ARRAY['white'], 'petite', 'small', 'small', 'https://epl-site-images.s3.us-east-2.amazonaws.com/megan.jpg');
+insert into companions (name, age, description, voice, lang, character_style, occupation, hair_color, eye_color, ethnicity, body_type, breast_size, butt_size, s3_image_url) VALUES ('Ella', 18, 'She just graduated from high school and decided to become a baker.', 'f9836c6e-a0bd-460e-9d3c-f7299fa60f94', 'English', 'Realistic', 'Baker', 'Black', 'Brown', ARRAY['white'], 'petite', 'small', 'small', 'https://epl-site-images.s3.us-east-2.amazonaws.com/ella.jpg');
+CREATE TABLE blog_posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(100) DEFAULT 'admin',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    tags VARCHAR(255)[]
+);
+CREATE TABLE blog_posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(100) DEFAULT 'admin',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tags VARCHAR(255)[]
+);
+INSERT INTO blog_posts (title, slug, content, tags)
+VALUES (
+    'Why I Built [Your Website Name]: A Better Way to Chat with AI Girlfriends',
+    'launch-announcement',
+    'When I started building [Your Website Name], I had one goal: to create the most engaging and cost-effective voice chat experience with AI girlfriends. I noticed nobody offered what I wanted—a platform with push-to-talk voice chat, auto-playing voice messages, and auto-continuation (where the model keeps talking after 30 seconds of silence).\n\nThese features make conversations feel more natural and less interrupted, while also saving users tokens. You get more voice chat time for your money—something I’m proud to offer.\n\nToday, I’m thrilled to launch the site and invite you to experience the future of AI chat. Whether you’re using text or voice, this platform is designed to feel seamless, immersive, and fun.\n\nCheck it out and let me know what you think. Your feedback will help shape what’s next.',
+    ARRAY['launch', 'voice chat', 'AI girlfriend', 'push-to-talk']
+);
+INSERT INTO blog_posts (title, slug, content, tags)
+VALUES (
+    'Custom AI Girlfriends: Personalize Your Experience',
+    'custom-characters-release',
+    'One size doesn’t fit all when it comes to conversations. That’s why I introduced custom characters on [Your Website Name]. Now, you can design your ideal AI girlfriend, choosing everything from her voice to her personality.\n\nWant someone playful and adventurous? Or calm and caring? It’s entirely up to you. These customizations allow you to create an AI companion that feels truly personal and unique.\n\nThis feature is a game-changer for anyone who wants more control over their experience. Start customizing your AI girlfriend today and see how much more engaging the conversations can be.',
+    ARRAY['custom characters', 'AI girlfriend', 'personalization']
+);
+INSERT INTO blog_posts (title, slug, content, tags)
+VALUES (
+    'Group Chats Are Here: Two Voices, Endless Possibilities',
+    'group-chat-feature',
+    'I’m excited to introduce group chat, one of the most requested features on [Your Website Name]. With group chat, you can mix and match any two AI characters and hear them interact in distinct voices.\n\nImagine designing two characters with contrasting personalities—maybe one is bubbly and extroverted while the other is introspective and serious. In group chat, you’ll hear them talk, joke, or even debate with each other, all while seamlessly responding to you.\n\nThis feature isn’t just about variety; it’s about creating richer, more dynamic conversations. Whether for fun or something deeper, group chat adds a new layer of interaction that I think you’ll love.',
+    ARRAY['group chat', 'voice chat', 'AI characters', 'dynamic conversations']
+);
+select * from blog_posts;
+INSERT INTO blog_posts (title, slug, content, tags)
+VALUES (
+    'New Year, Better AI: Faster, Smarter, and More Realistic',
+    'improved-models-2025',
+    '2025 starts with a big upgrade on [Your Website Name]. I’ve rolled out improvements to both text and image generation models. Conversations are now faster, responses are sharper, and visuals are more lifelike than ever.\n\nOne of my priorities has been reducing response times, especially for voice chats. The improved models make conversations flow more naturally, whether you’re talking to one character or enjoying the new group chat feature.\n\nThese updates ensure that the platform not only keeps up with expectations but exceeds them. I can’t wait for you to try it out and see the difference.',
+    ARRAY['improved models', 'voice chat', 'group chat', 'AI girlfriend']
+);
+\d blog_posts;
+select id, created_at from blog_posts;
+-- Update the created_at times for each post
+UPDATE blog_posts SET created_at = '2024-12-12 09:00:00' WHERE id = 1; -- Launch Announcement
+UPDATE blog_posts SET created_at = '2024-12-17 09:00:00' WHERE id = 2; -- Custom Characters
+UPDATE blog_posts SET created_at = '2024-12-27 09:00:00' WHERE id = 3; -- Group Chats
+UPDATE blog_posts SET created_at = '2025-01-01 09:00:00' WHERE id = 4; -- Improved Models
+update blog_posts set title = 'Why I Built EroticPlotBot.com: A Better Way to Chat with AI Girlfriends' where id = 1;
+update blog_posts set title = ' When I started building EroticPlotBot.com, I had one goal: to create the most engaging and cost-effective voice chat experience with AI girlfriends. I noticed nobody offered what I wanted—a platform with push-to-talk voice chat, auto-playing 
+voice messages, and auto-continuation (where the model keeps talking after 30 seconds of silence).\n\nThese features make conversations feel more natural and less interrupted, while also saving users tokens. You get more voice chat time for your money—something I’m proud to offer.\n\nToday, I’m thrilled to launch the site and invite you to experi
+ence the future of AI chat. Whether you’re using text or voice, this platform is designed to feel seamless, immersive, and fun.\n\nCheck it out and let me know what you think. Your feedback will help shape what’s next.' where id = 1;
+update blog_posts set content = ' When I started building EroticPlotBot.com, I had one goal: to create the most engaging and cost-effective voice chat experience with AI girlfriends. I noticed nobody offered what I wanted—a platform with push-to-talk voice chat, auto-playing 
+voice messages, and auto-continuation (where the model keeps talking after 30 seconds of silence).\n\nThese features make conversations feel more natural and less interrupted, while also saving users tokens. You get more voice chat time for your money—something I’m proud to offer.\n\nToday, I’m thrilled to launch the site and invite you to experi
+ence the future of AI chat. Whether you’re using text or voice, this platform is designed to feel seamless, immersive, and fun.\n\nCheck it out and let me know what you think. Your feedback will help shape what’s next.' where id = 1;
+CREATE DATABASE basketball
+;
+\c basketball
+-- PostgreSQL version of the basketball schema
+
+-- Create tables
+
+CREATE TABLE player_box_scores (
+    id SERIAL PRIMARY KEY,
+    slug TEXT NOT NULL,
+    game_date DATE NOT NULL,
+    name TEXT NOT NULL,
+    team TEXT NOT NULL,
+    location TEXT CHECK (location IN ('HOME', 'AWAY')),
+    opponent TEXT NOT NULL,
+    outcome TEXT CHECK (outcome IN ('WIN', 'LOSS')),
+    seconds_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    game_score REAL,
+    plus_minus REAL
+);
+
+CREATE TABLE player_season_totals (
+    id SERIAL PRIMARY KEY,
+    slug TEXT NOT NULL,
+    season_year INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    positions TEXT,
+    age INTEGER,
+    team TEXT NOT NULL,
+    games_played INTEGER,
+    games_started INTEGER,
+    minutes_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    points INTEGER
+);
+
+CREATE TABLE player_advanced_season_totals (
+    id SERIAL PRIMARY KEY,
+    slug TEXT NOT NULL,
+    season_year INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    positions TEXT,
+    age INTEGER,
+    team TEXT NOT NULL,
+    games_played INTEGER,
+    minutes_played INTEGER,
+    player_efficiency_rating REAL,
+    true_shooting_percentage REAL,
+    three_point_attempt_rate REAL,
+    free_throw_attempt_rate REAL,
+    offensive_rebound_percentage REAL,
+    defensive_rebound_percentage REAL,
+    total_rebound_percentage REAL,
+    assist_percentage REAL,
+    steal_percentage REAL,
+    block_percentage REAL,
+    turnover_percentage REAL,
+    usage_percentage REAL,
+    offensive_win_shares REAL,
+    defensive_win_shares REAL,
+    win_shares REAL,
+    win_shares_per_48_minutes REAL,
+    offensive_box_plus_minus REAL,
+    defensive_box_plus_minus REAL,
+    box_plus_minus REAL,
+    value_over_replacement_player REAL,
+    is_combined_totals BOOLEAN
+);
+
+CREATE TABLE season_schedule (
+    id SERIAL PRIMARY KEY,
+    season_year INTEGER NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    away_team TEXT NOT NULL,
+    away_team_score INTEGER,
+    home_team TEXT NOT NULL,
+    home_team_score INTEGER
+);
+
+CREATE TABLE standings (
+    id SERIAL PRIMARY KEY,
+    year INTEGER NOT NULL,
+    team TEXT NOT NULL,
+    wins INTEGER,
+    losses INTEGER,
+    division TEXT,
+    conference TEXT
+);
+
+CREATE TABLE team_box_scores (
+    id SERIAL PRIMARY KEY,
+    team TEXT NOT NULL,
+    game_date DATE NOT NULL,
+    minutes_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    points INTEGER,
+    outcome TEXT CHECK (outcome IN ('WIN', 'LOSS'))
+);
+
+CREATE TABLE imported_files (
+    id SERIAL PRIMARY KEY,
+    table_name TEXT NOT NULL,
+    filename TEXT NOT NULL,
+    import_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(table_name, filename)
+);
+CREATE EXTENSION fuzzystrmatch;
+CREATE USER basketball_user WITH PASSWORD 'Foobar12@';
+GRANT ALL PRIVILEGES ON DATABASE basketball TO basketball_user;
+\d
+-- Grant schema permissions (run this after connecting to the basketball database)
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO basketball_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO basketball_user;
+GRANT USAGE ON SCHEMA public TO basketball_user;
+
+-- Make future tables automatically grant permissions
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO basketball_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO basketball_user;
+\d
+select count(*) from imported_files
+;
+select count(*) from player_advanced_season_totals;
+select count(*) from player_box_scores;
+select count(*) from player_season_totals;
+select count(*) from season_schedule;
+select count(*) from standings;
+select count(*) from team_box_scores;
+\d player_box_scores
+\d team_box_scores
+SELECT COUNT(*) FROM team_box_scores WHERE team = 'PORTLAND TRAIL BLAZERS' AND outcome = 'WIN' AND game_date BETWEEN '2020-01-01' AND '2020-12-31';
+SELECT COUNT(*) FROM team_box_scores WHERE team = 'Portland Trail Blazers' AND outcome = 'WIN' AND season_year = '2020'
+;
+\d team_box_scores
+SELECT COUNT(*) FROM player_box_scores WHERE levenshtein(lower(name), lower('Damian Lillard')) <= 3 AND made_three_point_field_goals >= 10;
+SELECT 
+    name,
+    season_year,
+    made_three_point_field_goals,
+    attempted_three_point_field_goals,
+    CASE 
+        WHEN attempted_three_point_field_goals > 0 
+        THEN ROUND(made_three_point_field_goals::FLOAT / attempted_three_point_field_goals, 3) 
+        ELSE 0 
+    END AS three_point_percentage
+FROM 
+    player_season_totals
+WHERE 
+    levenshtein(lower(name), lower('Damian Lillard')) <= 3
+ORDER BY 
+    season_year DESC;
+SELECT 
+    name,
+    season_year,
+    made_three_point_field_goals,
+    attempted_three_point_field_goals,
+    CASE 
+        WHEN attempted_three_point_field_goals > 0 
+        THEN ROUND(CAST(made_three_point_field_goals AS DECIMAL) / attempted_three_point_field_goals, 3) 
+        ELSE 0 
+    END AS three_point_percentage
+FROM 
+    player_season_totals
+WHERE 
+    levenshtein(lower(name), lower('Damian Lillard')) <= 3
+ORDER BY 
+    season_year DESC;
+\d player_box_scores
+\s player_season_totals
