@@ -43,7 +43,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
       const data = await response.json();
       console.log('Query Results:', data.results);
       // Flatten the array of arrays into a single array of results
-      const flattenedResults = data.results.flatMap(resultList => resultList);
+      const flattenedResults = data.results.flatMap((resultList: any[]) => resultList);
       setQueryResults(flattenedResults);
     } catch (error) {
       console.error('Error executing queries:', error);
@@ -109,6 +109,27 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     }
   }
 
+  function displayTableHTML(results: Array<Record<string, any>>): string {
+    if (!results.length) return "<p>No results to display.</p>";
+  
+    const headers = Object.keys(results[0]);
+    const headerRow = headers.map(h => `<th>${h}</th>`).join("");
+  
+    const rows = results.map(row =>
+      "<tr>" +
+      headers.map(h => `<td>${String(row[h])}</td>`).join("") +
+      "</tr>"
+    ).join("");
+  
+    return `
+      <table border="1" cellpadding="5" cellspacing="0">
+        <thead><tr>${headerRow}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+  
+
   const header = (
     <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
       <h1 className="text-2xl font-semibold leading-none tracking-tight">Sports GPT</h1>
@@ -146,32 +167,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
                 >
                   <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
                   {block.sql}
-                  <div className="mt-2">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead>
-                        <tr>
-                          {getColumnNames(queryResults).map((key) => (
-                            <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              {key}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {queryResults.map((result, resultIndex) => (
-                          result.success && result.data.map((row, rowIndex) => (
-                            <tr key={`${resultIndex}-${rowIndex}`} className="border-b">
-                              {Object.entries(row).map(([key, value], valueIndex) => (
-                                <td key={valueIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {typeof value === 'object' ? JSON.stringify(value) : value}
-                                </td>
-                              ))}
-                            </tr>
-                          ))
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <div className="mt-2" dangerouslySetInnerHTML={{ __html: displayTableHTML(queryResults) }} />
                 </div>
               ))}
             </div>
