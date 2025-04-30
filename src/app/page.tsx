@@ -2,13 +2,13 @@
 
 import { ChatForm } from "@/components/chat-form"
 import { createClient } from '@/utils/supabase/client';
-// import { User } from "@supabase/supabase-js";
-import { useEffect } from "react";
+import { User } from "@supabase/supabase-js";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
 
-  // const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -22,7 +22,7 @@ export default function Page() {
         console.log(user.email)
         console.log("User is logged in");
         console.log(user);
-        // setUser(user);
+        setUser(user);
       } else {
         console.log("User is not logged in");
         router.push("/login")
@@ -32,16 +32,18 @@ export default function Page() {
     getUser();
 
     // Listen for auth changes
-    // const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       
-    //   // setUser(session?.user ?? null);
-    // });
+      // setUser(session?.user ?? null);
+    });
 
     // Cleanup subscription
-    // return () => {
-    //   subscription.unsubscribe();
-    // };
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  console.log(user);
 
   return (
     <div className="">

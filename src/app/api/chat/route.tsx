@@ -1,6 +1,7 @@
-import { type CoreMessage, streamText} from "ai"
+import { type CoreMessage, generateText} from "ai"
 import { openai } from "@ai-sdk/openai"
 import { systemPrompt } from './systemPrompt'
+import { NextResponse } from 'next/server'
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -8,24 +9,16 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
   const { messages }: { messages: CoreMessage[] } = await req.json()
 
-  const result = streamText({
-    model: openai("o4-mini"),
-    system: systemPrompt,
-    messages,
-  })
-
-  return result.toDataStreamResponse()
-
-  // try {
-  //   const { text } = await generateText({
-  //     model: openai("o4-mini"),
-  //     system: systemPrompt,
-  //     messages,
-  //   })
+  try {
+    const { text, finishReason, usage } = await generateText({
+      model: openai("o4-mini"),
+      system: systemPrompt,
+      messages,
+    })
   
-  //   return NextResponse.json({ text: text, success: true})
-  // } catch (error) {
-  //   console.error(error)
-  //   return new Response("An error occurred", { status: 500 })
-  // }
+    return NextResponse.json({ text, finishReason, usage })
+  } catch (error) {
+    console.error(error)
+    return new Response("An error occurred", { status: 500 })
+  }
 }
