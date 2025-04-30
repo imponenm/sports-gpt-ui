@@ -166,7 +166,10 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
       <h1 className="text-2xl font-semibold leading-none tracking-tight">Sports GPT</h1>
       <p className="text-muted-foreground text-md">
-        A chatbot that has been fine-tuned to provide accurate sports data.
+        The best chatbot for sports data and analysis.
+      </p>
+      <p className="text-muted-foreground text-sm">
+        SportsGPT queries data from a reliable sports database to ensure accuracy.
       </p>
       <div className="w-48 mx-auto">
         <Select value={selectedSport} onValueChange={setSelectedSport}>

@@ -34,7 +34,7 @@ export default function Page() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       
-      // setUser(session?.user ?? null);
+      setUser(session?.user ?? null);
     });
 
     // Cleanup subscription
