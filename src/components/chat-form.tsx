@@ -1,100 +1,95 @@
 "use client"
 
+import type React from "react"
+
 import { cn } from "@/lib/utils"
-
 import { useChat } from "@ai-sdk/react"
-
 import { ArrowUpIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { useState, useEffect } from "react"
 
 interface SQLBlock {
-  sql: string;
-  messageIndex: number;
+  sql: string
+  messageIndex: number
 }
 
 export function ChatForm({ className, ...props }: React.ComponentProps<"form">) {
   const [selectedSport, setSelectedSport] = useState("basketball")
   const [sqlBlocks, setSqlBlocks] = useState<SQLBlock[]>([])
+  const [queryResults, setQueryResults] = useState<Record<string, any>[]>([])
+//   const [displayMessages, setDisplayMessages] = useState([])
+
   const { messages, input, setInput, append } = useChat({
     api: "/api/chat",
+    onFinish: (message) => {
+      // This runs when the streaming response is complete
+      const queries = extractSqlQueries(message.content)
+      if (queries.length > 0) {
+        void sendQueriesToAPI(queries)
+      }
+    },
   })
-  const [queryResults, setQueryResults] = useState<Record<string, any>[]>([])
-  const [displayMessages, setDisplayMessages] = useState(messages)
+
+  // Extract SQL queries from message content
+  const extractSqlQueries = (content: string): string[] => {
+    const queries: string[] = []
+    const regex = /```sql\n([\s\S]*?)```/g
+    let match
+
+    while ((match = regex.exec(content)) !== null) {
+      queries.push(match[1].trim())
+    }
+
+    return queries
+  }
 
   const sendQueriesToAPI = async (queries: string[]) => {
     try {
-      const response = await fetch('/api/query', {
-        method: 'POST',
+      const response = await fetch("/api/query", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ query_list: queries }),
-      });
-      
-      const data = await response.json();
-      console.log('Query Results:', data.results);
-      // Flatten the array of arrays into a single array of results
-      const flattenedResults = data.results.flatMap((resultList: any[]) => resultList);
-      setQueryResults(flattenedResults);
-    } catch (error) {
-      console.error('Error executing queries:', error);
-    }
-  };
+      })
 
-  // Extract SQL blocks from messages and send to API
-  useEffect(() => {
-    const extractSqlBlocks = () => {
-      const newBlocks: SQLBlock[] = [];
-      const queries: string[] = [];
-      
-      messages.forEach((message, messageIndex) => {
-        const regex = /```sql\n([\s\S]*?)```/g;
-        let match;
-        while ((match = regex.exec(message.content)) !== null) {
-          const sql = match[1].trim();
-          newBlocks.push({
-            sql,
-            messageIndex
-          });
-          queries.push(sql);
-        }
-      });
-      
-      setSqlBlocks(newBlocks);
-      
-      // If we found any SQL queries, send them to the API
-      if (queries.length > 0) {
-        void sendQueriesToAPI(queries);
-      }
-    };
-    
-    extractSqlBlocks();
-  }, [messages]);
+      const data = await response.json()
+      console.log("Query Results:", data.results)
+      // Flatten the array of arrays into a single array of results
+      const flattenedResults = data.results.flatMap((resultList: any[]) => resultList)
+      setQueryResults(flattenedResults)
+    } catch (error) {
+      console.error("Error executing queries:", error)
+    }
+  }
 
   // Update displayMessages whenever messages or queryResults change
-  useEffect(() => {
-    const updatedMessages = [...messages];
-    // Append query results to the appropriate message
-    // Logic to append results to the correct message
-    setDisplayMessages(updatedMessages);
-  }, [messages, queryResults]);
+//   useEffect(() => {
+//     // Create a deep copy of messages to avoid modifying the original
+//     const updatedMessages = JSON.parse(JSON.stringify(messages))
+//     setDisplayMessages(updatedMessages)
+//   }, [messages, queryResults])
 
-  // Function to extract column names from the first row of the results
-  const getColumnNames = (results: Record<string, any>[]) => {
-    if (results.length > 0 && results[0].success && results[0].data.length > 0) {
-      return Object.keys(results[0].data[0]);
-    }
-    return [];
-  };
+  // Extract SQL blocks from messages for display purposes
+  useEffect(() => {
+    const newBlocks: SQLBlock[] = []
+
+    messages.forEach((message, messageIndex) => {
+      const regex = /```sql\n([\s\S]*?)```/g
+      let match
+      while ((match = regex.exec(message.content)) !== null) {
+        const sql = match[1].trim()
+        newBlocks.push({
+          sql,
+          messageIndex,
+        })
+      }
+    })
+
+    setSqlBlocks(newBlocks)
+  }, [messages])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -110,25 +105,22 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
   }
 
   function displayTableHTML(results: Array<Record<string, any>>): string {
-    if (!results.length) return "<p>No results to display.</p>";
-  
-    const headers = Object.keys(results[0]);
-    const headerRow = headers.map(h => `<th>${h}</th>`).join("");
-  
-    const rows = results.map(row =>
-      "<tr>" +
-      headers.map(h => `<td>${String(row[h])}</td>`).join("") +
-      "</tr>"
-    ).join("");
-  
+    if (!results.length) return "<p>No results to display.</p>"
+
+    const headers = Object.keys(results[0])
+    const headerRow = headers.map((h) => `<th>${h}</th>`).join("")
+
+    const rows = results
+      .map((row) => "<tr>" + headers.map((h) => `<td>${String(row[h])}</td>`).join("") + "</tr>")
+      .join("")
+
     return `
       <table border="1" cellpadding="5" cellspacing="0">
         <thead><tr>${headerRow}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
-    `;
+    `
   }
-  
 
   const header = (
     <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
@@ -143,8 +135,12 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="basketball">Basketball</SelectItem>
-            <SelectItem value="football" disabled>Football (Coming Soon)</SelectItem>
-            <SelectItem value="baseball" disabled>Baseball (Coming Soon)</SelectItem>
+            <SelectItem value="football" disabled>
+              Football (Coming Soon)
+            </SelectItem>
+            <SelectItem value="baseball" disabled>
+              Baseball (Coming Soon)
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -153,11 +149,11 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
 
   const messageList = (
     <div className="my-4 flex h-fit min-h-full flex-col gap-4">
-      {displayMessages.map((message, index) => {
-        const associatedSqlBlocks = sqlBlocks.filter(block => block.messageIndex === index);
-        const hasSqlBlock = associatedSqlBlocks.length > 0;
-        
-        if (message.role === 'assistant' && hasSqlBlock) {
+      {messages.map((message, index) => {
+        const associatedSqlBlocks = sqlBlocks.filter((block) => block.messageIndex === index)
+        const hasSqlBlock = associatedSqlBlocks.length > 0
+
+        if (message.role === "assistant" && hasSqlBlock) {
           return (
             <div key={index} className="self-start">
               {associatedSqlBlocks.map((block, sqlIndex) => (
@@ -171,12 +167,11 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
                 </div>
               ))}
             </div>
-          );
+          )
         }
-        
-        const displayContent = message.role === 'assistant' 
-          ? message.content.replace(/```sql[\s\S]*?```/g, '').trim()
-          : message.content;
+
+        const displayContent =
+          message.role === "assistant" ? message.content.replace(/```sql[\s\S]*?```/g, "").trim() : message.content
 
         return (
           <div key={index}>
@@ -187,7 +182,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
               {displayContent}
             </div>
           </div>
-        );
+        )
       })}
     </div>
   )
@@ -207,14 +202,14 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
       >
         <AutoResizeTextarea
           onKeyDown={handleKeyDown}
-          onChange={(v) => setInput(v)}
+          onChange={(value: string) => setInput(value)}
           value={input}
           placeholder="Enter a message"
           className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
         />
-  
+
         <Button variant="ghost" size="sm" className="absolute bottom-1 right-1 size-6 rounded-full">
-            <ArrowUpIcon size={16} />
+          <ArrowUpIcon size={16} />
         </Button>
       </form>
     </main>

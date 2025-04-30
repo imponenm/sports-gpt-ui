@@ -1,7 +1,7 @@
-import { type CoreMessage, streamText, generateText} from "ai"
+import { type CoreMessage, streamText} from "ai"
 import { openai } from "@ai-sdk/openai"
 import { systemPrompt } from './systemPrompt'
-import { NextResponse } from 'next/server'
+
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
