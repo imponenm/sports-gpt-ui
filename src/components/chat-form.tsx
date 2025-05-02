@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { useState, useEffect } from "react"
+import { User } from "@supabase/supabase-js";
 
 interface SQLBlock {
   sql: string
@@ -15,7 +16,7 @@ interface SQLBlock {
   results?: Record<string, any>[]
 }
 
-export function ChatForm({ className, ...props }: React.ComponentProps<"form">) {
+export function ChatForm({ className, user, ...props }: React.ComponentProps<"form"> & { user: User | null }) {
   const [selectedSport, setSelectedSport] = useState("basketball")
   const [sqlBlocks, setSqlBlocks] = useState<SQLBlock[]>([])
   const [messages, setMessages] = useState<{ content: string; role: string }[]>([])
@@ -89,6 +90,12 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    // Check if user is logged in
+    if (!user) {
+      window.location.href = "/login"
+      return
+    }
 
     // Add the user's message to the messages list
     const userMessage = { content: input, role: "user" }

@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        <MainHeader />
+        {/* <MainHeader /> */}
         <main className="pt-24 flex-grow">
           {children}
         </main>

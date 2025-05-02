@@ -1,6 +1,22 @@
-import Link from 'next/link'
+'use client'
 
-export function MainHeader() {
+import Link from 'next/link'
+import { createClient } from '@/utils/supabase/client';
+import { User } from "@supabase/supabase-js";
+
+export function MainHeader({ user }: { user: User | null }) {
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error logging out:', error.message);
+    } else {
+      console.log('Logged out successfully');
+      window.location.href = "/login";
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
       <div className="container mx-auto px-4">
@@ -19,6 +35,11 @@ export function MainHeader() {
             <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
               Contact
             </Link>
+            {user && (
+              <button onClick={handleLogout} className="text-gray-600 hover:text-blue-600 transition-colors">
+                Logout
+              </button>
+            )}
           </nav>
         </div>
       </div>
