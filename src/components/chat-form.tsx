@@ -3,17 +3,20 @@
 import type React from "react"
 
 import { cn } from "@/lib/utils"
-import { ArrowUpIcon } from "lucide-react"
+import { ArrowUpIcon, ThumbsUpIcon, ThumbsDownIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { useState, useEffect } from "react"
 import { User } from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/client"
 
 interface SQLBlock {
   sql: string
   messageIndex: number
   results?: Record<string, any>[]
+  feedbackGiven?: boolean
+  feedbackValue?: boolean
 }
 
 export function ChatForm({ className, user, ...props }: React.ComponentProps<"form"> & { user: User | null }) {
@@ -169,6 +172,54 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     `
   }
 
+  const submitFeedback = async (sqlBlock: SQLBlock, isThumbsUp: boolean) => {
+    if (!user) {
+      console.log("User not logged in, feedback not submitted")
+      return
+    }
+    
+    try {
+      // Find the user query that prompted this SQL response
+      const userMessageIndex = sqlBlock.messageIndex - 1
+      const userQuery = userMessageIndex >= 0 ? messages[userMessageIndex].content : ""
+      
+      const supabase = createClient()
+      const { error } = await supabase
+        .schema('feedback')
+        .from('query_feedback')
+        .insert({
+          user_id: user.id,
+          league: 'NBA',
+          user_query: userQuery,
+          sql_query: sqlBlock.sql,
+          is_thumbs_up: isThumbsUp
+        })
+      
+      if (error) {
+        console.error("Error submitting feedback:", error)
+        return
+      }
+      
+      // Update the local state to reflect feedback was given
+      setSqlBlocks(prevBlocks => {
+        return prevBlocks.map(block => {
+          if (block.messageIndex === sqlBlock.messageIndex && block.sql === sqlBlock.sql) {
+            return {
+              ...block,
+              feedbackGiven: true,
+              feedbackValue: isThumbsUp
+            }
+          }
+          return block
+        })
+      })
+      
+      console.log("Feedback submitted successfully")
+    } catch (error) {
+      console.error("Error in feedback submission:", error)
+    }
+  }
+
   const header = (
     <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
       <h1 className="text-2xl font-semibold leading-none tracking-tight">Sports GPT</h1>
@@ -216,6 +267,31 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                   <div className="mt-2" dangerouslySetInnerHTML={{ 
                     __html: block.results ? displayTableHTML(block.results) : "<p>Loading results...</p>" 
                   }} />
+                  
+                  {/* Feedback buttons */}
+                  {block.results && (
+                    <div className="mt-3 flex items-center gap-3">
+                      <div className="text-xs text-gray-400">Was this helpful?</div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`p-1 ${block.feedbackGiven && block.feedbackValue ? 'text-green-500' : 'text-gray-400 hover:text-white'}`}
+                        onClick={() => submitFeedback(block, true)}
+                        disabled={block.feedbackGiven}
+                      >
+                        <ThumbsUpIcon size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`p-1 ${block.feedbackGiven && !block.feedbackValue ? 'text-red-500' : 'text-gray-400 hover:text-white'}`}
+                        onClick={() => submitFeedback(block, false)}
+                        disabled={block.feedbackGiven}
+                      >
+                        <ThumbsDownIcon size={16} />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
