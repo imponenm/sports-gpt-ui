@@ -17,6 +17,7 @@ interface SQLBlock {
   results?: Record<string, any>[]
   feedbackGiven?: boolean
   feedbackValue?: boolean
+  hasError?: boolean
 }
 
 export function ChatForm({ className, user, ...props }: React.ComponentProps<"form"> & { user: User | null }) {
@@ -60,8 +61,13 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
             block => block.messageIndex === messageIndex && block.sql === query.trim()
           );
           
-          if (blockIndex !== -1 && data.results[queryIndex]) {
-            newBlocks[blockIndex].results = data.results[queryIndex];
+          if (blockIndex !== -1) {
+            if (data.results[queryIndex]) {
+              newBlocks[blockIndex].results = data.results[queryIndex];
+            } else {
+              // Mark as error if no results
+              newBlocks[blockIndex].hasError = true;
+            }
           }
         });
         
@@ -69,6 +75,18 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       });
     } catch (error) {
       console.error("Error executing queries:", error)
+      // Mark all queries as having errors
+      setSqlBlocks(prevBlocks => {
+        return prevBlocks.map(block => {
+          if (block.messageIndex === messageIndex) {
+            return {
+              ...block,
+              hasError: true
+            }
+          }
+          return block;
+        });
+      });
     }
   }
 
@@ -260,12 +278,16 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
               {associatedSqlBlocks.map((block, sqlIndex) => (
                 <div
                   key={`sql-${index}-${sqlIndex}`}
-                  className="mt-2 max-w-[80%] w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
+                  className="mt-2 max-w-[80%] min-w-[400px] w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
                 >
-                  <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
-                  {block.sql}
+                  {/* <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
+                  {block.sql} */}
                   <div className="mt-2" dangerouslySetInnerHTML={{ 
-                    __html: block.results ? displayTableHTML(block.results) : "<p>Loading results...</p>" 
+                    __html: block.hasError 
+                      ? "<p class='text-red-400'>Error loading results. The query might be invalid or the database unavailable.</p>" 
+                      : block.results 
+                        ? displayTableHTML(block.results) 
+                        : "<p>Loading results...</p>" 
                   }} />
                   
                   {/* Feedback buttons */}
@@ -302,10 +324,10 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           message.role === "assistant" ? message.content.replace(/```sql[\s\S]*?```/g, "").trim() : message.content
 
         return (
-          <div key={index}>
+          <div key={index} className="flex flex-col">
             <div
               data-role={message.role}
-              className="max-w-[80%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
+              className="max-w-[70%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
             >
               {displayContent}
             </div>
