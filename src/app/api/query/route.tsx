@@ -18,6 +18,16 @@ export async function POST(req: Request) {
     const results = await Promise.all(
       query_list.map(async (query) => {
         try {
+          // Validate query is a SELECT statement
+          const trimmedQuery = query.trim().toUpperCase();
+          if (!trimmedQuery.startsWith('SELECT')) {
+            return {
+              success: false,
+              error: 'Only SELECT statements are allowed',
+              query,
+            };
+          }
+          
           const result = await pool.query(query);
           return {
             success: true,
