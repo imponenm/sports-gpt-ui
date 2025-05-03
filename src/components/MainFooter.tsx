@@ -16,8 +16,14 @@ export function MainFooter() {
             <Link href="/about" className="text-gray-600 hover:text-blue-600 transition-colors">
               About
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
-              Contact
+            <Link href="mailto:support@gptforsports.com" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Support
+            </Link>
+            <Link href="/privacy" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Privacy
+            </Link>
+            <Link href="/tos" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Terms of Service
             </Link>
           </nav>
         </div>

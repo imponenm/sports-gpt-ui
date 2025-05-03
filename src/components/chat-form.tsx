@@ -50,7 +50,6 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       })
 
       const data = await response.json()
-      console.log("Query Results:", data.results)
       
       // Update the specific SQL blocks with their results
       setSqlBlocks(prevBlocks => {
@@ -280,8 +279,8 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                   key={`sql-${index}-${sqlIndex}`}
                   className="mt-2 max-w-[80%] min-w-[400px] w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
                 >
-                  {/* <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
-                  {block.sql} */}
+                  <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
+                  {block.sql}
                   <div className="mt-2" dangerouslySetInnerHTML={{ 
                     __html: block.hasError 
                       ? "<p class='text-red-400'>Error loading results. The query might be invalid or the database unavailable.</p>" 

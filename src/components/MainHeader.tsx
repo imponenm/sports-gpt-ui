@@ -32,8 +32,8 @@ export function MainHeader({ user }: { user: User | null }) {
             <Link href="/about" className="text-gray-600 hover:text-blue-600 transition-colors">
               About
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
-              Contact
+            <Link href="mailto:support@gptforsports.com" className="text-gray-600 hover:text-blue-600 transition-colors">
+              Support
             </Link>
             {user && (
               <button onClick={handleLogout} className="text-gray-600 hover:text-blue-600 transition-colors">

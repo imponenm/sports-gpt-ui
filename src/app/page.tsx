@@ -20,13 +20,7 @@ export default function Page() {
     async function getUser() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        console.log(user.email)
-        console.log("User is logged in");
-        console.log(user);
         setUser(user);
-      } else {
-        console.log("User is not logged in");
-        // router.push("/login")
       }
     }
 
@@ -43,8 +37,6 @@ export default function Page() {
       subscription.unsubscribe();
     };
   }, []);
-
-  console.log(user);
 
   return (
     <div className="">
