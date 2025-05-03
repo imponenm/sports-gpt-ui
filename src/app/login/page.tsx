@@ -1,9 +1,9 @@
 "use client";
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-// import Image from 'next/image';
-import { Icon } from 'lucide-react';
-import { basketball } from '@lucide/lab';
+import Image from 'next/image';
+// import { Icon } from 'lucide-react';
+// import { basketball } from '@lucide/lab';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -50,7 +50,8 @@ export default function LoginPage() {
     <div className="flex flex-1 flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="w-full max-w-md p-8 mx-auto bg-white rounded-lg shadow-lg">
         <div className="flex flex-col items-center mb-8">
-          <Icon iconNode={basketball} size={72} />
+          {/* <Icon iconNode={basketball} size={72} /> */}
+          <Image src="/basketball-icon-512.png" alt="Sports GPT Logo" width={72} height={72} />
           <h1 className="text-2xl font-bold text-gray-800 mt-8">Login to Sports GPT</h1>
           <p className="text-gray-600 mt-2">Enter your email to sign up or login</p>
         </div>
