@@ -65,7 +65,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc ml-6 mb-3">
             <li>Provide and maintain our service</li>
-            <li>Improve our chatbot's responses and functionality</li>
+            <li>Improve our chatbot&apos;s responses and functionality</li>
             <li>Identify and authenticate users</li>
             <li>Respond to your requests or inquiries</li>
           </ul>
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Service Status</h2>
           <p className="mb-3">
-            This is currently a free service provided "as is" without any formal service guarantees.
+            This is currently a free service provided &quot;as is&quot; without any formal service guarantees.
             We do not accept payments or offer commercial services at this time.
           </p>
         </section>

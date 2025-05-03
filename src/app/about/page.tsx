@@ -54,7 +54,7 @@ export default function AboutPage() {
           
           <h2 className="text-xl font-semibold mt-6">Our Coverage</h2>
           <p>
-            We're currently focused on NBA regular season data, with plans to rapidly expand our coverage to include:
+            We&apos;re currently focused on NBA regular season data, with plans to rapidly expand our coverage to include:
           </p>
           <ul className="list-disc pl-6 mt-2">
             <li>NBA post-season statistics</li>
@@ -69,7 +69,7 @@ export default function AboutPage() {
             backed by real data from authoritative sources, not AI hallucinations or outdated information.
           </p>
           
-          <h2 className="text-xl font-semibold mt-6">(Coming Soon) Fantasy Sports & Betting</h2>
+          <h2 className="text-xl font-semibold mt-6">(Coming Soon) Fantasy Sports &amp; Betting</h2>
           <p>
             Sports GPT is an invaluable tool for fantasy sports players and sports bettors who need reliable data to make informed decisions. We have specific features planned for this in the future:
           </p>
@@ -79,7 +79,7 @@ export default function AboutPage() {
             <li>Betting profitability estimator</li>
           </ul>
           <p className="mt-2">
-            Whether you're managing fantasy teams or looking for an edge in sports betting, our data-backed insights 
+            Whether you&apos;re managing fantasy teams or looking for an edge in sports betting, our data-backed insights 
             help you make decisions with confidence rather than guesswork.
           </p>
         </div>
