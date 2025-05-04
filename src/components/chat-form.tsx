@@ -66,7 +66,6 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       });
 
       const data = await response.json();
-      console.log("Paged results:", data);
       
       if (data.results[0] && data.results[0].data) {
         setSqlBlocks(prevBlocks => {
@@ -116,7 +115,6 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
   // Modify the sendQueriesToAPI function to include pagination
   const sendQueriesToAPI = async (queries: string[], messageIndex: number) => {
     try {
-      console.log("Sending queries:", queries);
       const response = await fetch("/api/query", {
         method: "POST",
         headers: {
@@ -130,7 +128,6 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       });
 
       const data = await response.json();
-      console.log("API response:", data);
       
       // Update the specific SQL blocks with their results
       setSqlBlocks(prevBlocks => {
@@ -459,7 +456,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                   
                   {/* Pagination Controls */}
                   {block.pagination && block.pagination.totalPages > 1 && (
-                    <div className="mt-3 flex items-center justify-between">
+                    <div className="mt-3 flex items-center">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -469,18 +466,18 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                       >
                         ← Previous
                       </Button>
-                      <div className="text-xs text-gray-400">
-                        Page {block.pagination.page + 1} of {block.pagination.totalPages}
-                      </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-gray-400 hover:text-white"
+                        className="text-gray-400 hover:text-white ml-2"
                         onClick={() => changePage(block, block.pagination!.page + 1)}
                         disabled={block.pagination.page >= block.pagination.totalPages - 1}
                       >
                         Next →
                       </Button>
+                      <div className="text-xs text-gray-400 ml-auto">
+                        Page {block.pagination.page + 1} of {block.pagination.totalPages}
+                      </div>
                     </div>
                   )}
                   

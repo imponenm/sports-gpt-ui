@@ -40,14 +40,12 @@ export async function POST(req: Request) {
           
           // First get the total count by wrapping the query
           const countQuery = `SELECT COUNT(*) FROM (${cleanQuery}) AS count_query`;
-          console.log("Count query:", countQuery);
           const countResult = await pool.query(countQuery);
           const totalRows = parseInt(countResult.rows[0].count, 10);
           
           // Apply pagination to the original query
           const offset = page * rowsPerPage;
           const paginatedQuery = `${cleanQuery} LIMIT ${rowsPerPage} OFFSET ${offset}`;
-          console.log("Paginated query:", paginatedQuery);
           
           const result = await pool.query(paginatedQuery);
           return {
@@ -89,9 +87,8 @@ export async function POST(req: Request) {
       };
     });
     
-    console.log("API Response:", JSON.stringify({ results: formattedResults }));
-    
     return NextResponse.json({ results: formattedResults });
+    
   } catch (error) {
     console.error("Route handler error:", error);
     return NextResponse.json(
