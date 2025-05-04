@@ -6,9 +6,10 @@ import React, { useRef, useEffect, type TextareaHTMLAttributes } from "react"
 interface AutoResizeTextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "value" | "onChange"> {
   value: string
   onChange: (value: string) => void
+  onTextareaClick?: () => void
 }
 
-export function AutoResizeTextarea({ className, value, onChange, ...props }: AutoResizeTextareaProps) {
+export function AutoResizeTextarea({ className, value, onChange, onTextareaClick, ...props }: AutoResizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const resizeTextarea = () => {
@@ -29,6 +30,7 @@ export function AutoResizeTextarea({ className, value, onChange, ...props }: Aut
       value={value}
       ref={textareaRef}
       rows={1}
+      onClick={onTextareaClick}
       onChange={(e) => {
         onChange(e.target.value)
         resizeTextarea()

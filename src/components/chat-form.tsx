@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useState, useEffect } from "react"
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation"
 
 interface SQLBlock {
   sql: string
@@ -22,6 +23,7 @@ interface SQLBlock {
 }
 
 export function ChatForm({ className, user, ...props }: React.ComponentProps<"form"> & { user: User | null }) {
+  const router = useRouter()
   const [selectedSport, setSelectedSport] = useState("basketball")
   const [sqlBlocks, setSqlBlocks] = useState<SQLBlock[]>([])
   const [messages, setMessages] = useState<{ content: string; role: string }[]>([])
@@ -145,7 +147,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
     // Check if user is logged in
     if (!user) {
-      window.location.href = "/login"
+      router.push("/login")
       return
     }
 
@@ -293,12 +295,15 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
             <SelectValue placeholder="Select a sport" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="basketball">Basketball</SelectItem>
-            <SelectItem value="football" disabled>
-              Football (Coming Soon)
+            <SelectItem value="NBA">NBA</SelectItem>
+            <SelectItem value="NFL" disabled>
+              NFL (Coming Soon)
             </SelectItem>
-            <SelectItem value="baseball" disabled>
-              Baseball (Coming Soon)
+            <SelectItem value="MLB" disabled>
+              MLB (Coming Soon)
+            </SelectItem>
+            <SelectItem value="MLB" disabled>
+              Soccer (Coming Soon)
             </SelectItem>
           </SelectContent>
         </Select>
@@ -395,6 +400,14 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     </div>
   )
 
+  // Add a new function to handle textarea click
+  const handleTextareaClick = () => {
+    // Check if user is logged in
+    if (!user) {
+      router.push("/login")
+    }
+  }
+
   return (
     <main
       className={cn(
@@ -411,6 +424,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         <AutoResizeTextarea
           onKeyDown={handleKeyDown}
           onChange={(value: string) => setInput(value)}
+          onTextareaClick={handleTextareaClick}
           value={input}
           placeholder="Enter a message"
           className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
