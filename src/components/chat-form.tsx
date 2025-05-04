@@ -545,6 +545,21 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       {...props}
     >
       <div className="flex-1 content-center overflow-y-auto px-6">{messages.length ? messageList : header}</div>
+      
+      {/* Example prompts - only show when no messages */}
+      {messages.length === 0 && (
+        <div className="mx-6 mb-4">
+          <div className="bg-gray-100 rounded-xl p-4 text-sm">
+            <p className="text-gray-500 mb-2 font-medium">Try asking:</p>
+            <ul className="space-y-2 text-gray-700">
+              <li>- How many games has Steph Curry score 10 or more 3 point shots in a game?</li>
+              <li>- Show me Damin Lillard's top 5 scoring playoff games.</li>
+              <li>- How many times have the Celtics won a championship?</li>
+            </ul>
+          </div>
+        </div>
+      )}
+      
       <form
         onSubmit={handleSubmit}
         className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-6 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-1 focus-within:ring-offset-0"

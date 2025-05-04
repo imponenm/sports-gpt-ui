@@ -24,9 +24,11 @@ export async function POST(req: Request) {
         try {
           // Remove any trailing semicolons from the query
           let cleanQuery = query.trim();
+          console.log("Clean query:", cleanQuery);
           if (cleanQuery.endsWith(';')) {
             cleanQuery = cleanQuery.slice(0, -1);
           }
+          console.log("Clean query:", cleanQuery);
 
           // Validate query is a SELECT statement
           const trimmedQuery = cleanQuery.toUpperCase();
@@ -45,7 +47,15 @@ export async function POST(req: Request) {
           
           // Apply pagination to the original query
           const offset = page * rowsPerPage;
-          const paginatedQuery = `${cleanQuery} LIMIT ${rowsPerPage} OFFSET ${offset}`;
+          let paginatedQuery = cleanQuery;
+
+          // Check if the query already has a LIMIT clause
+          if (!paginatedQuery.toUpperCase().includes('LIMIT')) {
+            paginatedQuery = `${cleanQuery} LIMIT ${rowsPerPage} OFFSET ${offset}`;
+          } else {
+            // If query already has LIMIT, use it as is
+            console.log("Query already contains LIMIT clause, skipping pagination");
+          }
           
           const result = await pool.query(paginatedQuery);
           return {
