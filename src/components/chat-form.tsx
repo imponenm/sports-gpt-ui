@@ -16,18 +16,26 @@ interface SQLBlock {
   sql: string
   messageIndex: number
   results?: Record<string, any>[]
+  pagination?: {
+    page: number
+    rowsPerPage: number
+    totalRows: number
+    totalPages: number
+  }
   feedbackGiven?: boolean
   feedbackValue?: boolean
   hasError?: boolean
   isExpanded?: boolean
+  errorMessage?: string
 }
 
 export function ChatForm({ className, user, ...props }: React.ComponentProps<"form"> & { user: User | null }) {
   const router = useRouter()
-  const [selectedSport, setSelectedSport] = useState("basketball")
+  const [selectedSport, setSelectedSport] = useState("NBA")
   const [sqlBlocks, setSqlBlocks] = useState<SQLBlock[]>([])
   const [messages, setMessages] = useState<{ content: string; role: string }[]>([])
   const [input, setInput] = useState("")
+  const [rowsPerPage] = useState(100); // Configure rows per page
 
   // Extract SQL queries from message content
   const extractSqlQueries = (content: string): string[] => {
@@ -42,17 +50,87 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     return queries
   }
 
-  const sendQueriesToAPI = async (queries: string[], messageIndex: number) => {
+  // Function to fetch a specific page of results
+  const fetchPagedResults = async (sql: string, messageIndex: number, page: number) => {
     try {
       const response = await fetch("/api/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query_list: queries }),
-      })
+        body: JSON.stringify({ 
+          query_list: [sql],
+          page: page,
+          rowsPerPage: rowsPerPage
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
+      console.log("Paged results:", data);
+      
+      if (data.results[0] && data.results[0].data) {
+        setSqlBlocks(prevBlocks => {
+          return prevBlocks.map(block => {
+            if (block.messageIndex === messageIndex && block.sql === sql) {
+              return {
+                ...block,
+                results: data.results[0].data,
+                pagination: data.results[0].pagination,
+                hasError: false
+              };
+            }
+            return block;
+          });
+        });
+      } else {
+        setSqlBlocks(prevBlocks => {
+          return prevBlocks.map(block => {
+            if (block.messageIndex === messageIndex && block.sql === sql) {
+              return {
+                ...block,
+                hasError: true,
+                errorMessage: data.results[0]?.error || "No results returned"
+              };
+            }
+            return block;
+          });
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching paged results:", error);
+      setSqlBlocks(prevBlocks => {
+        return prevBlocks.map(block => {
+          if (block.messageIndex === messageIndex && block.sql === sql) {
+            return {
+              ...block,
+              hasError: true,
+              errorMessage: "Error fetching paged results"
+            };
+          }
+          return block;
+        });
+      });
+    }
+  };
+
+  // Modify the sendQueriesToAPI function to include pagination
+  const sendQueriesToAPI = async (queries: string[], messageIndex: number) => {
+    try {
+      console.log("Sending queries:", queries);
+      const response = await fetch("/api/query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          query_list: queries,
+          page: 0, // Start with the first page
+          rowsPerPage: rowsPerPage
+        }),
+      });
+
+      const data = await response.json();
+      console.log("API response:", data);
       
       // Update the specific SQL blocks with their results
       setSqlBlocks(prevBlocks => {
@@ -64,11 +142,19 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           );
           
           if (blockIndex !== -1) {
-            if (data.results[queryIndex]) {
-              newBlocks[blockIndex].results = data.results[queryIndex];
-            } else {
-              // Mark as error if no results
+            const resultData = data.results[queryIndex];
+            
+            if (resultData && resultData.data) {
+              newBlocks[blockIndex].results = resultData.data;
+              newBlocks[blockIndex].pagination = resultData.pagination;
+            } else if (resultData && resultData.error) {
+              // Handle error case
               newBlocks[blockIndex].hasError = true;
+              newBlocks[blockIndex].errorMessage = resultData.error;
+            } else {
+              // Mark as error if no results or unexpected format
+              newBlocks[blockIndex].hasError = true;
+              newBlocks[blockIndex].errorMessage = "No results or invalid response format";
             }
           }
         });
@@ -76,21 +162,30 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         return newBlocks;
       });
     } catch (error) {
-      console.error("Error executing queries:", error)
+      console.error("Error executing queries:", error);
       // Mark all queries as having errors
       setSqlBlocks(prevBlocks => {
         return prevBlocks.map(block => {
           if (block.messageIndex === messageIndex) {
             return {
               ...block,
-              hasError: true
+              hasError: true,
+              errorMessage: "Error sending query request"
             }
           }
           return block;
         });
       });
     }
-  }
+  };
+
+  // Function to handle page navigation
+  const changePage = (block: SQLBlock, page: number) => {
+    // Only fetch if the page is different from current
+    if (block.pagination && page !== block.pagination.page) {
+      fetchPagedResults(block.sql, block.messageIndex, page);
+    }
+  };
 
   // Extract SQL blocks from messages for display purposes
   useEffect(() => {
@@ -204,17 +299,25 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     }
   }
 
-  function displayTableHTML(results: Array<Record<string, any>>): string {
-    if (!results.length) return "<p>No results to display.</p>"
+  // Function to display table with pagination info
+  function displayTableHTML(results: Array<Record<string, any>>, pagination?: SQLBlock['pagination']): string {
+    if (!results.length) return "<p>No results to display.</p>";
 
-    const headers = Object.keys(results[0])
-    const headerRow = headers.map((h) => `<th style="text-align: left; padding: 8px; white-space: nowrap;">${h}</th>`).join("")
+    const headers = Object.keys(results[0]);
+    const headerRow = headers.map((h) => `<th style="text-align: left; padding: 8px; white-space: nowrap;">${h}</th>`).join("");
 
     const rows = results
       .map((row) => "<tr style=\"border-top: 1px solid #e5e7eb;\">" + 
         headers.map((h) => `<td style="text-align: left; padding: 8px;">${String(row[h])}</td>`).join("") + 
         "</tr>")
-      .join("")
+      .join("");
+
+    // Add pagination info if available
+    const paginationInfo = pagination ? `
+      <div style="margin-top: 10px; font-size: 0.875rem; color: #6b7280;">
+        Showing ${pagination.page * pagination.rowsPerPage + 1}-${Math.min((pagination.page + 1) * pagination.rowsPerPage, pagination.totalRows)} of ${pagination.totalRows} results
+      </div>
+    ` : '';
 
     return `
       <div style="overflow-x: auto; margin-top: 10px;">
@@ -228,8 +331,9 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
             ${rows}
           </tbody>
         </table>
+        ${paginationInfo}
       </div>
-    `
+    `;
   }
 
   const submitFeedback = async (sqlBlock: SQLBlock, isThumbsUp: boolean) => {
@@ -347,11 +451,38 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                   
                   <div className="mt-2" dangerouslySetInnerHTML={{ 
                     __html: block.hasError 
-                      ? "<p class='text-red-400'>Error loading results. The query might be invalid or the database unavailable.</p>" 
+                      ? `<p class='text-red-400'>Error: ${block.errorMessage || "The query might be invalid or the database unavailable."}</p>` 
                       : block.results 
-                        ? displayTableHTML(block.results) 
+                        ? displayTableHTML(block.results, block.pagination) 
                         : "<p>Loading results...</p>" 
                   }} />
+                  
+                  {/* Pagination Controls */}
+                  {block.pagination && block.pagination.totalPages > 1 && (
+                    <div className="mt-3 flex items-center justify-between">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-400 hover:text-white"
+                        onClick={() => changePage(block, block.pagination!.page - 1)}
+                        disabled={block.pagination.page <= 0}
+                      >
+                        ← Previous
+                      </Button>
+                      <div className="text-xs text-gray-400">
+                        Page {block.pagination.page + 1} of {block.pagination.totalPages}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-400 hover:text-white"
+                        onClick={() => changePage(block, block.pagination!.page + 1)}
+                        disabled={block.pagination.page >= block.pagination.totalPages - 1}
+                      >
+                        Next →
+                      </Button>
+                    </div>
+                  )}
                   
                   {/* Feedback buttons */}
                   {block.results && (
