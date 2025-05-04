@@ -12,6 +12,7 @@ CREATE EXTENSION fuzzystrmatch;
 CREATE TABLE player_box_scores (
     id SERIAL PRIMARY KEY,
     slug TEXT NOT NULL,
+    season_year INTEGER NOT NULL,
     game_date DATE NOT NULL,
     name TEXT NOT NULL,
     team TEXT NOT NULL,
@@ -121,6 +122,7 @@ CREATE TABLE standings (
 CREATE TABLE team_box_scores (
     id SERIAL PRIMARY KEY,
     team TEXT NOT NULL,
+    season_year INTEGER NOT NULL,
     game_date DATE NOT NULL,
     minutes_played INTEGER,
     made_field_goals INTEGER,
@@ -167,6 +169,7 @@ CREATE TABLE team_season_totals (
 CREATE TABLE player_box_scores_playoffs (
     id SERIAL PRIMARY KEY,
     slug TEXT NOT NULL,
+    season_year INTEGER NOT NULL,
     game_date DATE NOT NULL,
     name TEXT NOT NULL,
     team TEXT NOT NULL,
@@ -222,6 +225,7 @@ CREATE TABLE player_season_totals_playoffs (
 CREATE TABLE team_box_scores_playoffs (
     id SERIAL PRIMARY KEY,
     team TEXT NOT NULL,
+    season_year INTEGER NOT NULL,
     game_date DATE NOT NULL,
     minutes_played INTEGER,
     made_field_goals INTEGER,

@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { cn } from "@/lib/utils"
-import { ArrowUpIcon, ThumbsUpIcon, ThumbsDownIcon } from "lucide-react"
+import { ArrowUpIcon, ThumbsUpIcon, ThumbsDownIcon, ChevronRightIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
@@ -18,6 +18,7 @@ interface SQLBlock {
   feedbackGiven?: boolean
   feedbackValue?: boolean
   hasError?: boolean
+  isExpanded?: boolean
 }
 
 export function ChatForm({ className, user, ...props }: React.ComponentProps<"form"> & { user: User | null }) {
@@ -101,12 +102,28 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         newBlocks.push({
           sql,
           messageIndex,
+          isExpanded: false
         })
       }
     })
 
     setSqlBlocks(newBlocks)
   }, [messages])
+
+  // Toggle function to expand/collapse SQL blocks
+  const toggleSqlBlock = (messageIndex: number, sqlIndex: number) => {
+    setSqlBlocks(prevBlocks => {
+      return prevBlocks.map((block, idx) => {
+        if (block.messageIndex === messageIndex && idx === sqlIndex) {
+          return {
+            ...block,
+            isExpanded: !block.isExpanded
+          }
+        }
+        return block;
+      });
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -279,8 +296,26 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                   key={`sql-${index}-${sqlIndex}`}
                   className="mt-2 max-w-[80%] min-w-[400px] w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
                 >
-                  <div className="mb-1 text-xs text-gray-400">Generated SQL:</div>
-                  {block.sql}
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => toggleSqlBlock(block.messageIndex, sqlIndex)}
+                      className="text-gray-400 hover:text-white transition-transform duration-200"
+                      aria-label={block.isExpanded ? "Hide SQL query" : "Show SQL query"}
+                    >
+                      <ChevronRightIcon 
+                        size={18} 
+                        className={`transition-transform ${block.isExpanded ? 'rotate-90' : ''}`} 
+                      />
+                    </button>
+                    <div className="text-xs text-gray-400">Generated SQL:</div>
+                  </div>
+                  
+                  {block.isExpanded && (
+                    <div className="mt-2 pl-5 border-l border-gray-700 py-1">
+                      {block.sql}
+                    </div>
+                  )}
+                  
                   <div className="mt-2" dangerouslySetInnerHTML={{ 
                     __html: block.hasError 
                       ? "<p class='text-red-400'>Error loading results. The query might be invalid or the database unavailable.</p>" 
