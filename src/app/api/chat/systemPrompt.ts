@@ -542,7 +542,7 @@ SELECT team, season_year, games_played, wins FROM team_season_totals WHERE team 
 7. How any games did the Lakers score 10 or more 3 point shots this season?
 \`\`\`sql
 -- When asking about team data in specific games, we should query the team_box_scores table
-SELECT team , opponent, game_date, made_three_point_field_goals, attempted_three_point_field_goals FROM team_box_scores WHERE team = 'LOS ANGELES LAKERS' AND made_three_point_field_goals >= 10 AND EXTRACT(YEAR FROM game_date) = 2023;
+SELECT team , opponent, game_date, made_three_point_field_goals, attempted_three_point_field_goals FROM team_box_scores WHERE team = 'LOS ANGELES LAKERS' AND made_three_point_field_goals >= 10 AND season_year = 2023;
 \`\`\`
 
 8. Compare three point statistics between Damian Lillard and Stephen Curry:
@@ -589,7 +589,7 @@ ORDER BY
 
 9. Show me steph curry's 3 point statistics for games agains the rockets in 2022-2023
 \`\`\`sql
--- NOTE: If the query is about a one or more games and we query the box scores table, we need to filter between the start and end of the season, typically starting no earlier than September 15th and ending no later than July 1st
+-- NOTE: If the query is about a one or more games and we query the box scores table, we can filter by season_year.
 SELECT 
     name,
     game_date,
@@ -600,40 +600,26 @@ FROM
 WHERE 
     name = 'Stephen Curry'
     AND opponent = 'HOUSTON ROCKETS'
-    AND game_date BETWEEN '2022-09-15' AND '2023-07-01';
+    AND season_year = 2023;
 \`\`\`
 
-10. Show me steph curry's total 3 point statistics for the 2022-2023 season
-\`\`\`sql
--- NOTE: If the query is about one or more seasons and we don't need box scores, we query the season totals table. In this case, we filter by season_year. If the user provides phrases it as '2022-2023 season', we should filter by season_year = '2023'. If they phrase is as '2022 and 2023 seasons', we should filter by season_year IN ('2022', '2023').
-SELECT 
-    name,
-    made_three_point_field_goals,
-    attempted_three_point_field_goals
-FROM 
-    player_season_totals
-WHERE 
-    lower(name) = lower('Stephen Curry')
-    AND season_year = '2023';
-\`\`\`
-
-11. Show me the playoffs schedule for the 2024 season:
+10. Show me the playoffs schedule for the 2024 season:
 \`\`\`sql
 SELECT * FROM season_schedule WHERE season_year = '2024' AND is_playoff_game = true;
 \`\`\`
 
-12. How many points did Kobe Bryant score during his career in the playoffs?
+11. How many points did Kobe Bryant score during his career in the playoffs?
 \`\`\`sql
 -- NOTE: When asking about a player's playoff data, we should query the player_box_scores_playoffs table
 SELECT SUM(points) FROM player_season_totals_playoffs WHERE name = 'Kobe Bryant';
 \`\`\`
 
-13. How many times have the Lakers been to the playoffs?
+12. How many times have the Lakers been to the playoffs?
 \`\`\`sql
 SELECT COUNT(*) FROM team_season_totals_playoffs WHERE team = 'LOS ANGELES LAKERS';
 \`\`\`
 
-14. Who won the championship in 2020?
+13. Who won the championship in 2020?
 \`\`\`sql
 -- NOTE: To check who won the championship, check who won the last game in the playoffs for a given season
 SELECT 
@@ -649,7 +635,7 @@ ORDER BY start_time DESC
 LIMIT 1;
 \`\`\`
 
-15. How many times has the Lakers won the championship?
+14. How many times has the Lakers won the championship?
 \`\`\`sql
 SELECT COUNT(*) AS lakers_championships
 FROM (

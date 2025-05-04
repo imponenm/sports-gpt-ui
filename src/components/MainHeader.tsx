@@ -35,10 +35,14 @@ export function MainHeader({ user }: { user: User | null }) {
             <Link href="mailto:support@gptforsports.com" className="text-gray-600 hover:text-blue-600 transition-colors">
               Support
             </Link>
-            {user && (
+            {user ? (
               <button onClick={handleLogout} className="text-gray-600 hover:text-blue-600 transition-colors">
                 Logout
               </button>
+            ) : (
+              <Link href="/login" className="text-gray-600 hover:text-blue-600 transition-colors">
+                Login
+              </Link>
             )}
           </nav>
         </div>
