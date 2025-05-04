@@ -398,6 +398,12 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       <p className="text-muted-foreground text-sm">
         SportsGPT queries data from a reliable sports database to ensure accuracy.
       </p>
+      <div className="text-muted-foreground text-xs mt-1 mb-2 mx-auto max-w-md">
+        <ul className="text-left list-disc pl-5">
+            <li>We currently only have data from 2000 onwards</li>
+          <li>Play-in games are counted as regular season games</li>
+        </ul>
+      </div>
       <div className="w-48 mx-auto">
         <Select value={selectedSport} onValueChange={setSelectedSport}>
           <SelectTrigger>
