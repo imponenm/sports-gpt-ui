@@ -7,9 +7,10 @@ interface AutoResizeTextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAr
   value: string
   onChange: (value: string) => void
   onTextareaClick?: () => void
+  disabled?: boolean
 }
 
-export function AutoResizeTextarea({ className, value, onChange, onTextareaClick, ...props }: AutoResizeTextareaProps) {
+export function AutoResizeTextarea({ className, value, onChange, onTextareaClick, disabled = false, ...props }: AutoResizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const resizeTextarea = () => {
@@ -30,12 +31,19 @@ export function AutoResizeTextarea({ className, value, onChange, onTextareaClick
       value={value}
       ref={textareaRef}
       rows={1}
+      disabled={disabled}
       onClick={onTextareaClick}
       onChange={(e) => {
-        onChange(e.target.value)
-        resizeTextarea()
+        if (!disabled) {
+          onChange(e.target.value)
+          resizeTextarea()
+        }
       }}
-      className={cn("resize-none min-h-4 max-h-80", className)}
+      className={cn(
+        "resize-none min-h-4 max-h-80", 
+        disabled && "opacity-70 cursor-not-allowed",
+        className
+      )}
     />
   )
 }

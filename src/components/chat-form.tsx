@@ -35,6 +35,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
   const [sqlBlocks, setSqlBlocks] = useState<SQLBlock[]>([])
   const [messages, setMessages] = useState<{ content: string; role: string }[]>([])
   const [input, setInput] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [rowsPerPage] = useState(100); // Configure rows per page
 
   // Extract SQL queries from message content
@@ -237,11 +238,16 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+    // Prevent duplicate submissions
+    if (isSubmitting || !input.trim()) return
+
     // Check if user is logged in
     if (!user) {
       router.push("/login")
       return
     }
+
+    setIsSubmitting(true)
 
     // Add the user's message to the messages list
     const userMessage = { content: input, role: "user" }
@@ -283,6 +289,8 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
     } catch (error) {
       console.error("Error sending message:", error)
+    } finally {
+      setIsSubmitting(false)
     }
 
     // Clear the input field
@@ -551,11 +559,26 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         <div className="mx-6 mb-4">
           <div className="bg-gray-100 rounded-xl p-4 text-sm">
             <p className="text-gray-500 mb-2 font-medium">Try asking:</p>
-            <ul className="space-y-2 text-gray-700">
-              <li>- How many games has Steph Curry score 10 or more 3 point shots in a game?</li>
-              <li>- Show me Damin Lillard&apos;s top 5 scoring playoff games.</li>
-              <li>- How many times have the Celtics won a championship?</li>
-            </ul>
+            <div className="space-y-2 text-gray-700">
+              <p 
+                className="cursor-pointer hover:text-blue-600 transition-colors" 
+                onClick={() => setInput("How many games has Steph Curry score 10 or more 3 point shots in a game?")}
+              >
+                How many games has Steph Curry score 10 or more 3 point shots in a game?
+              </p>
+              <p 
+                className="cursor-pointer hover:text-blue-600 transition-colors" 
+                onClick={() => setInput("Show me Damin Lillard's top 5 scoring playoff games.")}
+              >
+                Show me Damin Lillard&apos;s top 5 scoring playoff games.
+              </p>
+              <p 
+                className="cursor-pointer hover:text-blue-600 transition-colors" 
+                onClick={() => setInput("How many times have the Celtics won a championship?")}
+              >
+                How many times have the Celtics won a championship?
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -570,10 +593,16 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           onTextareaClick={handleTextareaClick}
           value={input}
           placeholder="Enter a message"
+          disabled={isSubmitting}
           className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
         />
 
-        <Button variant="ghost" size="sm" className="absolute bottom-1 right-1 size-6 rounded-full">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="absolute bottom-1 right-1 size-6 rounded-full" 
+          disabled={isSubmitting}
+        >
           <ArrowUpIcon size={16} />
         </Button>
       </form>
