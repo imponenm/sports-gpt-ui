@@ -92,22 +92,37 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
   // Extract SQL blocks from messages for display purposes
   useEffect(() => {
-    const newBlocks: SQLBlock[] = []
+    // Instead of creating entirely new blocks, merge with existing ones
+    setSqlBlocks(prevBlocks => {
+      const newBlocks: SQLBlock[] = []
 
-    messages.forEach((message, messageIndex) => {
-      const regex = /```sql\n([\s\S]*?)```/g
-      let match
-      while ((match = regex.exec(message.content)) !== null) {
-        const sql = match[1].trim()
-        newBlocks.push({
-          sql,
-          messageIndex,
-          isExpanded: false
-        })
-      }
+      messages.forEach((message, messageIndex) => {
+        const regex = /```sql\n([\s\S]*?)```/g
+        let match
+        while ((match = regex.exec(message.content)) !== null) {
+          const sql = match[1].trim()
+          
+          // Look for existing block with the same sql and messageIndex
+          const existingBlock = prevBlocks.find(block => 
+            block.messageIndex === messageIndex && block.sql === sql
+          )
+          
+          if (existingBlock) {
+            // Keep the existing block with its results
+            newBlocks.push(existingBlock)
+          } else {
+            // Add new block
+            newBlocks.push({
+              sql,
+              messageIndex,
+              isExpanded: false
+            })
+          }
+        }
+      })
+
+      return newBlocks
     })
-
-    setSqlBlocks(newBlocks)
   }, [messages])
 
   // Toggle function to expand/collapse SQL blocks
@@ -137,6 +152,10 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     // Add the user's message to the messages list
     const userMessage = { content: input, role: "user" }
     setMessages((prevMessages) => [...prevMessages, userMessage])
+    
+    // Add a temporary "Thinking..." message
+    const thinkingMessage = { content: "Thinking...", role: "assistant" }
+    setMessages((prevMessages) => [...prevMessages, thinkingMessage])
 
     // Send the message to the API
     try {
@@ -151,8 +170,13 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       const data = await response.json()
       const assistantMessage = { content: data.text, role: "assistant" }
 
-      // Add the assistant's message to the messages list
-      setMessages((prevMessages) => [...prevMessages, assistantMessage])
+      // Replace the thinking message with the actual response
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages]
+        // Replace the last message (thinking) with the actual response
+        newMessages[newMessages.length - 1] = assistantMessage
+        return newMessages
+      })
 
       // Extract SQL queries from the assistant's message
       const queries = extractSqlQueries(assistantMessage.content)
@@ -307,7 +331,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                         className={`transition-transform ${block.isExpanded ? 'rotate-90' : ''}`} 
                       />
                     </button>
-                    <div className="text-xs text-gray-400">Generated SQL:</div>
+                    <div className="text-xs text-gray-400">View SQL:</div>
                   </div>
                   
                   {block.isExpanded && (
