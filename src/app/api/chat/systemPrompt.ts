@@ -104,7 +104,8 @@ CREATE TABLE season_schedule (
     away_team TEXT NOT NULL,
     away_team_score INTEGER,
     home_team TEXT NOT NULL,
-    home_team_score INTEGER
+    home_team_score INTEGER,
+    is_playoff_game BOOLEAN
 );
 
 CREATE TABLE standings (
@@ -163,12 +164,105 @@ CREATE TABLE team_season_totals (
     losses INTEGER
 );
 
-CREATE TABLE imported_files (
+CREATE TABLE player_box_scores_playoffs (
     id SERIAL PRIMARY KEY,
-    table_name TEXT NOT NULL,
-    filename TEXT NOT NULL,
-    import_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(table_name, filename)
+    slug TEXT NOT NULL,
+    game_date DATE NOT NULL,
+    name TEXT NOT NULL,
+    team TEXT NOT NULL,
+    location TEXT CHECK (location IN ('HOME', 'AWAY')),
+    opponent TEXT NOT NULL,
+    outcome TEXT CHECK (outcome IN ('WIN', 'LOSS')),
+    seconds_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    game_score REAL,
+    plus_minus REAL,
+    points INTEGER
+);
+
+CREATE TABLE player_season_totals_playoffs (
+    id SERIAL PRIMARY KEY,
+    slug TEXT NOT NULL,
+    season_year INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    positions TEXT,
+    age INTEGER,
+    team TEXT NOT NULL,
+    games_played INTEGER,
+    games_started INTEGER,
+    minutes_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    points INTEGER
+);
+
+CREATE TABLE team_box_scores_playoffs (
+    id SERIAL PRIMARY KEY,
+    team TEXT NOT NULL,
+    game_date DATE NOT NULL,
+    minutes_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    points INTEGER,
+    outcome TEXT CHECK (outcome IN ('WIN', 'LOSS'))
+);
+
+CREATE TABLE team_season_totals_playoffs (
+    id SERIAL PRIMARY KEY,
+    team TEXT NOT NULL,                                                    
+    season_year INTEGER NOT NULL,
+    games_played INTEGER,                                            
+    minutes_played INTEGER,
+    made_field_goals INTEGER,
+    attempted_field_goals INTEGER,
+    made_three_point_field_goals INTEGER,
+    attempted_three_point_field_goals INTEGER,
+    made_free_throws INTEGER,
+    attempted_free_throws INTEGER,
+    offensive_rebounds INTEGER,
+    defensive_rebounds INTEGER,
+    assists INTEGER,
+    steals INTEGER,
+    blocks INTEGER,
+    turnovers INTEGER,
+    personal_fouls INTEGER,
+    points INTEGER,
+    wins INTEGER,
+    losses INTEGER
 );
 \`\`\`
 
@@ -410,7 +504,6 @@ LEAGUE_ABBREVIATIONS_TO_LEAGUE = {
     "BAA": League.BASKETBALL_ASSOCIATION_OF_AMERICA,
 }
 \`\`\`
-
 ### EXAMPLES:
 
 1. Get the Mavericks season schedule from the 2018-2019 season:
@@ -524,4 +617,57 @@ WHERE
     AND season_year = '2023';
 \`\`\`
 
+11. Show me the playoffs schedule for the 2024 season:
+\`\`\`sql
+SELECT * FROM season_schedule WHERE season_year = '2024' AND is_playoff_game = true;
+\`\`\`
+
+12. How many points did Kobe Bryant score during his career in the playoffs?
+\`\`\`sql
+-- NOTE: When asking about a player's playoff data, we should query the player_box_scores_playoffs table
+SELECT SUM(points) FROM player_season_totals_playoffs WHERE name = 'Kobe Bryant';
+\`\`\`
+
+13. How many times have the Lakers been to the playoffs?
+\`\`\`sql
+SELECT COUNT(*) FROM team_season_totals_playoffs WHERE team = 'LOS ANGELES LAKERS';
+\`\`\`
+
+14. Who won the championship in 2020?
+\`\`\`sql
+-- NOTE: To check who won the championship, check who won the last game in the playoffs for a given season
+SELECT 
+  CASE 
+    WHEN home_team_score > away_team_score THEN home_team
+    ELSE away_team
+  END AS winner
+FROM season_schedule
+WHERE is_playoff_game = true
+  AND season_year = 2020
+  AND (home_team_score IS NOT NULL AND away_team_score IS NOT NULL)
+ORDER BY start_time DESC
+LIMIT 1;
+\`\`\`
+
+15. How many times has the Lakers won the championship?
+\`\`\`sql
+SELECT COUNT(*) AS lakers_championships
+FROM (
+  SELECT season_year,
+         CASE 
+           WHEN home_team_score > away_team_score THEN home_team
+           ELSE away_team
+         END AS winner
+  FROM season_schedule
+  WHERE is_playoff_game = true
+  AND (home_team_score IS NOT NULL AND away_team_score IS NOT NULL)
+  AND (season_year, start_time) IN (
+    SELECT season_year, MAX(start_time)
+    FROM season_schedule
+    WHERE is_playoff_game = true
+    GROUP BY season_year
+  )
+) AS finals
+WHERE winner = 'LOS ANGELES LAKERS';
+\`\`\`
 `; 
