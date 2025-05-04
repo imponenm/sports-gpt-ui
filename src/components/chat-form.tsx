@@ -553,7 +553,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
             <p className="text-gray-500 mb-2 font-medium">Try asking:</p>
             <ul className="space-y-2 text-gray-700">
               <li>- How many games has Steph Curry score 10 or more 3 point shots in a game?</li>
-              <li>- Show me Damin Lillard's top 5 scoring playoff games.</li>
+              <li>- Show me Damin Lillard&apos;s top 5 scoring playoff games.</li>
               <li>- How many times have the Celtics won a championship?</li>
             </ul>
           </div>
