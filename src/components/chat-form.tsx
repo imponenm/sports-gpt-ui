@@ -304,41 +304,53 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     }
   }
 
-  // Function to display table with pagination info
-  function displayTableHTML(results: Array<Record<string, any>>, pagination?: SQLBlock['pagination']): string {
-    if (!results.length) return "<p>No results to display.</p>";
+  // Remove the displayTableHTML function and add these components instead
+  function ResultsTable({ results, pagination }: { results: Array<Record<string, any>>, pagination?: SQLBlock['pagination'] }) {
+    if (!results.length) return <p>No results to display.</p>;
 
     const headers = Object.keys(results[0]);
-    const headerRow = headers.map((h) => `<th style="text-align: left; padding: 8px; white-space: nowrap;">${h}</th>`).join("");
 
-    const rows = results
-      .map((row) => "<tr style=\"border-top: 1px solid #e5e7eb;\">" + 
-        headers.map((h) => `<td style="text-align: left; padding: 8px;">${String(row[h])}</td>`).join("") + 
-        "</tr>")
-      .join("");
-
-    // Add pagination info if available
-    const paginationInfo = pagination ? `
-      <div style="margin-top: 10px; font-size: 0.875rem; color: #6b7280;">
-        Showing ${pagination.page * pagination.rowsPerPage + 1}-${Math.min((pagination.page + 1) * pagination.rowsPerPage, pagination.totalRows)} of ${pagination.totalRows} results
-      </div>
-    ` : '';
-
-    return `
-      <div style="overflow-x: auto; margin-top: 10px;">
-        <table style="border-collapse: collapse; width: 100%; font-size: 0.875rem;">
+    return (
+      <div className="overflow-x-auto mt-2.5">
+        <table className="border-collapse w-full text-sm">
           <thead>
-            <tr style="border-bottom: 2px solid #d1d5db;">
-              ${headerRow}
+            <tr className="border-b-2 border-gray-300">
+              {headers.map((header, i) => (
+                <th key={i} className="text-left p-2 whitespace-nowrap">{header}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            ${rows}
+            {results.map((row, rowIndex) => (
+              <tr key={rowIndex} className="border-t border-gray-200">
+                {headers.map((header, cellIndex) => (
+                  <td key={cellIndex} className="text-left p-2">{String(row[header])}</td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
-        ${paginationInfo}
+        
+        {pagination && (
+          <div className="mt-2.5 text-sm text-gray-500">
+            Showing {pagination.page * pagination.rowsPerPage + 1}-
+            {Math.min((pagination.page + 1) * pagination.rowsPerPage, pagination.totalRows)} of {pagination.totalRows} results
+          </div>
+        )}
       </div>
-    `;
+    );
+  }
+
+  function QueryResult({ block }: { block: SQLBlock }) {
+    if (block.hasError) {
+      return <p className="text-red-400">Error: {block.errorMessage || "The query might be invalid or the database unavailable."}</p>;
+    }
+    
+    if (!block.results) {
+      return <p>Loading results...</p>;
+    }
+    
+    return <ResultsTable results={block.results} pagination={block.pagination} />;
   }
 
   const submitFeedback = async (sqlBlock: SQLBlock, isThumbsUp: boolean) => {
@@ -460,13 +472,9 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                     </div>
                   )}
                   
-                  <div className="mt-2" dangerouslySetInnerHTML={{ 
-                    __html: block.hasError 
-                      ? `<p class='text-red-400'>Error: ${block.errorMessage || "The query might be invalid or the database unavailable."}</p>` 
-                      : block.results 
-                        ? displayTableHTML(block.results, block.pagination) 
-                        : "<p>Loading results...</p>" 
-                  }} />
+                  <div className="mt-2">
+                    <QueryResult block={block} />
+                  </div>
                   
                   {/* Pagination Controls */}
                   {block.pagination && block.pagination.totalPages > 1 && (
