@@ -513,40 +513,40 @@ LEAGUE_ABBREVIATIONS_TO_LEAGUE = {
 1. Get the Mavericks season schedule from the 2018-2019 season:
 \`\`\`sql
 -- NOTE: When searching for team names, use the full team name, and uppercase letters.
-SELECT * FROM season_schedule WHERE (home_team = 'DALLAS MAVERICKS' OR away_team = 'DALLAS MAVERICKS') AND season_year = '2019';
+SELECT * FROM nba.season_schedule WHERE (home_team = 'DALLAS MAVERICKS' OR away_team = 'DALLAS MAVERICKS') AND season_year = '2019';
 \`\`\`
 
 2. Who had the most 3 pointers made in the 2019 season:
 \`\`\`sql
-SELECT name, made_three_point_field_goals FROM player_season_totals WHERE season_year = '2019' ORDER BY made_three_point_field_goals DESC LIMIT 1;
+SELECT name, made_three_point_field_goals FROM nba.player_season_totals WHERE season_year = '2019' ORDER BY made_three_point_field_goals DESC LIMIT 1;
 \`\`\`
 
 3. How many games has Steph Curry score 10 or more 3 pointers?:
 \`\`\`sql
-SELECT name, game_date, made_three_point_field_goals, attempted_field_goals FROM player_box_scores WHERE lower(name) = lower('Stephen Curry') AND made_three_point_field_goals >= 10;
+SELECT name, game_date, made_three_point_field_goals, attempted_field_goals FROM nba.player_box_scores WHERE lower(name) = lower('Stephen Curry') AND made_three_point_field_goals >= 10;
 \`\`\`
 
 4. Show me Lebron's season stats for each season:
 \`\`\`sql
-SELECT * FROM player_season_totals WHERE lower(name) = lower('Lebron James');
+SELECT * FROM nba.player_season_totals WHERE lower(name) = lower('Lebron James');
 \`\`\`
 
 5. How many games did Lillard play this season?
 \`\`\`sql
 -- NOTE: On questions where only a first or last name is provided, try and figure out which current NBA player they are
-SELECT name, games_played FROM player_season_totals WHERE lower(name) = lower('Damian Lillard') AND season_year = '2019';
+SELECT name, games_played FROM nba.player_season_totals WHERE lower(name) = lower('Damian Lillard') AND season_year = '2019';
 \`\`\`
 
 6. How many games did the Lakers win this season?
 \`\`\`sql
 -- When asking about team season data, we should query the team_season_totals table
-SELECT team, season_year, games_played, wins FROM team_season_totals WHERE team = 'LOS ANGELES LAKERS' AND season_year = '2019';
+SELECT team, season_year, games_played, wins FROM nba.team_season_totals WHERE team = 'LOS ANGELES LAKERS' AND season_year = '2019';
 \`\`\`
 
 7. How any games did the Lakers score 10 or more 3 point shots this season?
 \`\`\`sql
 -- When asking about team data in specific games, we should query the team_box_scores table
-SELECT team , opponent, game_date, made_three_point_field_goals, attempted_three_point_field_goals FROM team_box_scores WHERE team = 'LOS ANGELES LAKERS' AND made_three_point_field_goals >= 10 AND season_year = 2023;
+SELECT team , opponent, game_date, made_three_point_field_goals, attempted_three_point_field_goals FROM nba.team_box_scores WHERE team = 'LOS ANGELES LAKERS' AND made_three_point_field_goals >= 10 AND season_year = 2023;
 \`\`\`
 
 8. Compare three point statistics between Damian Lillard and Stephen Curry:
@@ -564,7 +564,7 @@ SELECT
         ELSE 0 
     END AS three_point_percentage
 FROM 
-    player_season_totals
+    nba.player_season_totals
 WHERE 
     name = 'Damian Lillard'
 ORDER BY 
@@ -584,7 +584,7 @@ SELECT
         ELSE 0 
     END AS three_point_percentage
 FROM 
-    player_season_totals
+    nba.player_season_totals
 WHERE 
     name = 'Stephen Curry'
 ORDER BY 
@@ -600,7 +600,7 @@ SELECT
     made_three_point_field_goals,
     attempted_three_point_field_goals
 FROM 
-    player_box_scores
+    nba.player_box_scores
 WHERE 
     name = 'Stephen Curry'
     AND opponent = 'HOUSTON ROCKETS'
@@ -609,18 +609,18 @@ WHERE
 
 10. Show me the playoffs schedule for the 2024 season:
 \`\`\`sql
-SELECT * FROM season_schedule WHERE season_year = '2024' AND is_playoff_game = true;
+SELECT * FROM nba.season_schedule WHERE season_year = '2024' AND is_playoff_game = true;
 \`\`\`
 
 11. How many points did Kobe Bryant score during his career in the playoffs?
 \`\`\`sql
 -- NOTE: When asking about a player's playoff data, we should query the player_box_scores_playoffs table
-SELECT SUM(points) FROM player_season_totals_playoffs WHERE name = 'Kobe Bryant';
+SELECT SUM(points) FROM nba.player_season_totals_playoffs WHERE name = 'Kobe Bryant';
 \`\`\`
 
 12. How many times have the Lakers been to the playoffs?
 \`\`\`sql
-SELECT COUNT(*) FROM team_season_totals_playoffs WHERE team = 'LOS ANGELES LAKERS';
+SELECT COUNT(*) FROM nba.team_season_totals_playoffs WHERE team = 'LOS ANGELES LAKERS';
 \`\`\`
 
 13. Who won the championship in 2020?
@@ -631,7 +631,7 @@ SELECT
     WHEN home_team_score > away_team_score THEN home_team
     ELSE away_team
   END AS winner
-FROM season_schedule
+FROM nba.season_schedule
 WHERE is_playoff_game = true
   AND season_year = 2020
   AND (home_team_score IS NOT NULL AND away_team_score IS NOT NULL)
@@ -648,12 +648,12 @@ FROM (
            WHEN home_team_score > away_team_score THEN home_team
            ELSE away_team
          END AS winner
-  FROM season_schedule
+  FROM nba.season_schedule
   WHERE is_playoff_game = true
   AND (home_team_score IS NOT NULL AND away_team_score IS NOT NULL)
   AND (season_year, start_time) IN (
     SELECT season_year, MAX(start_time)
-    FROM season_schedule
+    FROM nba.season_schedule
     WHERE is_playoff_game = true
     GROUP BY season_year
   )
