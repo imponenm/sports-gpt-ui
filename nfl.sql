@@ -89,26 +89,6 @@ CREATE TABLE public.game_stats (
 
 
 --
--- Name: game_stats_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.game_stats_stat_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: game_stats_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.game_stats_stat_id_seq OWNED BY public.game_stats.stat_id;
-
-
---
 -- Name: games; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -156,6 +136,112 @@ CREATE TABLE public.players (
     age integer,
     team_id integer
 );
+
+
+--
+-- Name: teams; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.teams (
+    team_id integer NOT NULL,
+    conference character varying(3) NOT NULL,
+    division character varying(10) NOT NULL,
+    location character varying(50) NOT NULL,
+    name character varying(50) NOT NULL,
+    full_name character varying(100) NOT NULL,
+    abbreviation character varying(5) NOT NULL
+);
+
+
+--
+-- Name: derived_season_stats; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.derived_season_stats AS
+ SELECT p.player_id,
+    p.first_name,
+    p.last_name,
+    t.team_id,
+    g.season,
+    count(DISTINCT gs.game_id) AS games_played,
+    sum(gs.passing_completions) AS passing_completions,
+    sum(gs.passing_attempts) AS passing_attempts,
+    sum(gs.passing_yards) AS passing_yards,
+        CASE
+            WHEN (sum(gs.passing_attempts) > 0) THEN round(((sum(gs.passing_yards))::numeric / (sum(gs.passing_attempts))::numeric), 1)
+            ELSE NULL::numeric
+        END AS yards_per_pass_attempt,
+    sum(gs.passing_touchdowns) AS passing_touchdowns,
+    sum(gs.passing_interceptions) AS passing_interceptions,
+    ROUND(AVG(gs.qb_rating), 1) AS avg_qb_rating,
+    ROUND(AVG(gs.qbr), 1) AS avg_qbr,
+    sum(gs.rushing_attempts) AS rushing_attempts,
+    sum(gs.rushing_yards) AS rushing_yards,
+        CASE
+            WHEN (sum(gs.rushing_attempts) > 0) THEN round(((sum(gs.rushing_yards))::numeric / (sum(gs.rushing_attempts))::numeric), 3)
+            ELSE NULL::numeric
+        END AS yards_per_rush_attempt,
+    sum(gs.rushing_touchdowns) AS rushing_touchdowns,
+    max(gs.long_rushing) AS long_rushing,
+    sum(gs.receptions) AS receptions,
+    sum(gs.receiving_yards) AS receiving_yards,
+        CASE
+            WHEN (sum(gs.receptions) > 0) THEN round(((sum(gs.receiving_yards))::numeric / (sum(gs.receptions))::numeric), 3)
+            ELSE NULL::numeric
+        END AS yards_per_reception,
+    sum(gs.receiving_touchdowns) AS receiving_touchdowns,
+    max(gs.long_reception) AS long_reception,
+    sum(gs.receiving_targets) AS receiving_targets,
+    sum(gs.fumbles) AS fumbles,
+    sum(gs.fumbles_lost) AS fumbles_lost,
+    sum(gs.fumbles_recovered) AS fumbles_recovered,
+    sum(gs.total_tackles) AS total_tackles,
+    sum(gs.defensive_sacks) AS defensive_sacks,
+    sum(gs.solo_tackles) AS solo_tackles,
+    sum(gs.tackles_for_loss) AS tackles_for_loss,
+    sum(gs.passes_defended) AS passes_defended,
+    sum(gs.qb_hits) AS qb_hits,
+    sum(gs.fumbles_touchdowns) AS fumbles_touchdowns,
+    sum(gs.defensive_interceptions) AS defensive_interceptions,
+    sum(gs.interception_yards) AS interception_yards,
+    sum(gs.interception_touchdowns) AS interception_touchdowns,
+        CASE
+            WHEN (count(DISTINCT gs.game_id) > 0) THEN round(((sum(gs.passing_yards))::numeric / (count(DISTINCT gs.game_id))::numeric), 1)
+            ELSE NULL::numeric
+        END AS passing_yards_per_game,
+        CASE
+            WHEN (count(DISTINCT gs.game_id) > 0) THEN round(((sum(gs.rushing_yards))::numeric / (count(DISTINCT gs.game_id))::numeric), 1)
+            ELSE NULL::numeric
+        END AS rushing_yards_per_game,
+        CASE
+            WHEN (count(DISTINCT gs.game_id) > 0) THEN round(((sum(gs.receiving_yards))::numeric / (count(DISTINCT gs.game_id))::numeric), 1)
+            ELSE NULL::numeric
+        END AS receiving_yards_per_game
+   FROM (((public.game_stats gs
+     JOIN public.players p ON ((gs.player_id = p.player_id)))
+     JOIN public.teams t ON ((gs.team_id = t.team_id)))
+     JOIN public.games g ON ((gs.game_id = g.game_id)))
+  GROUP BY p.player_id, p.first_name, p.last_name, t.team_id, g.season;
+
+
+--
+-- Name: game_stats_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.game_stats_stat_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: game_stats_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.game_stats_stat_id_seq OWNED BY public.game_stats.stat_id;
 
 
 --
@@ -292,21 +378,6 @@ CREATE SEQUENCE public.team_standings_standing_id_seq
 --
 
 ALTER SEQUENCE public.team_standings_standing_id_seq OWNED BY public.team_standings.standing_id;
-
-
---
--- Name: teams; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.teams (
-    team_id integer NOT NULL,
-    conference character varying(3) NOT NULL,
-    division character varying(10) NOT NULL,
-    location character varying(50) NOT NULL,
-    name character varying(50) NOT NULL,
-    full_name character varying(100) NOT NULL,
-    abbreviation character varying(5) NOT NULL
-);
 
 
 --
@@ -474,13 +545,6 @@ GRANT ALL ON TABLE public.game_stats TO basketball_user;
 
 
 --
--- Name: SEQUENCE game_stats_stat_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.game_stats_stat_id_seq TO basketball_user;
-
-
---
 -- Name: TABLE games; Type: ACL; Schema: public; Owner: -
 --
 
@@ -492,6 +556,27 @@ GRANT ALL ON TABLE public.games TO basketball_user;
 --
 
 GRANT ALL ON TABLE public.players TO basketball_user;
+
+
+--
+-- Name: TABLE teams; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.teams TO basketball_user;
+
+
+--
+-- Name: TABLE derived_season_stats; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.derived_season_stats TO basketball_user;
+
+
+--
+-- Name: SEQUENCE game_stats_stat_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON SEQUENCE public.game_stats_stat_id_seq TO basketball_user;
 
 
 --
@@ -520,13 +605,6 @@ GRANT ALL ON TABLE public.team_standings TO basketball_user;
 --
 
 GRANT ALL ON SEQUENCE public.team_standings_standing_id_seq TO basketball_user;
-
-
---
--- Name: TABLE teams; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.teams TO basketball_user;
 
 
 --
