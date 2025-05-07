@@ -433,10 +433,10 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       </div>
       <div className="w-48 mx-auto">
         <Select value={selectedSport} onValueChange={setSelectedSport}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder="Select a sport" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white">
             <SelectItem value="NBA">NBA</SelectItem>
             <SelectItem value="NFL">NFL</SelectItem>
             <SelectItem value="MLB" disabled>
