@@ -62,7 +62,8 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         body: JSON.stringify({ 
           query_list: [sql],
           page: page,
-          rowsPerPage: rowsPerPage
+          rowsPerPage: rowsPerPage,
+          sport: selectedSport
         }),
       });
 
@@ -124,7 +125,8 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         body: JSON.stringify({ 
           query_list: queries,
           page: 0, // Start with the first page
-          rowsPerPage: rowsPerPage
+          rowsPerPage: rowsPerPage,
+          sport: selectedSport
         }),
       });
 
@@ -264,7 +266,10 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        body: JSON.stringify({ 
+          messages: [...messages, userMessage],
+          sport: selectedSport 
+        }),
       })
 
       const data = await response.json()
@@ -311,7 +316,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     const headers = Object.keys(results[0]);
 
     return (
-      <div className="overflow-x-auto mt-2.5">
+      <div className="overflow-x-auto mt-2.5 w-full">
         <table className="border-collapse w-full text-sm">
           <thead>
             <tr className="border-b-2 border-gray-300">
@@ -412,8 +417,18 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       </p>
       <div className="text-muted-foreground text-xs mt-1 mb-2 mx-auto max-w-md">
         <ul className="text-left list-disc pl-5">
-            <li>We currently only have data from 2000 onwards</li>
-          <li>Play-in games are counted as regular season games</li>
+          {selectedSport === "NBA" ? (
+            <>
+              <li>We support data from 2000 - present.</li>
+              <li>We support season and game data.</li>
+              <li>Play-in games are counted as regular season games.</li>
+            </>
+          ) : (
+            <>
+                <li>We support data from 2002 and onwards.</li>
+                <li>We support season, game, and quarter data.</li>
+            </>
+          )}
         </ul>
       </div>
       <div className="w-48 mx-auto">
@@ -423,9 +438,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="NBA">NBA</SelectItem>
-            <SelectItem value="NFL" disabled>
-              NFL (Coming Soon)
-            </SelectItem>
+            <SelectItem value="NFL">NFL</SelectItem>
             <SelectItem value="MLB" disabled>
               MLB (Coming Soon)
             </SelectItem>
@@ -446,11 +459,11 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
         if (message.role === "assistant" && hasSqlBlock) {
           return (
-            <div key={index} className="self-start">
+            <div key={index} className="w-full">
               {associatedSqlBlocks.map((block, sqlIndex) => (
                 <div
                   key={`sql-${index}-${sqlIndex}`}
-                  className="mt-2 max-w-[80%] min-w-[400px] w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
+                  className="mt-2 w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
                 >
                   <div className="flex items-center gap-2">
                     <button 
@@ -574,24 +587,61 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           <div className="bg-gray-100 rounded-xl p-4 text-sm">
             <p className="text-gray-500 mb-2 font-medium">Try asking:</p>
             <div className="space-y-2 text-gray-700">
-              <p 
-                className="cursor-pointer hover:text-blue-600 transition-colors" 
-                onClick={() => setInput("How many games has Steph Curry score 10 or more 3 point shots in a game?")}
-              >
-                How many games has Steph Curry score 10 or more 3 point shots in a game?
-              </p>
-              <p 
-                className="cursor-pointer hover:text-blue-600 transition-colors" 
-                onClick={() => setInput("Show me Damin Lillard's top 5 scoring playoff games.")}
-              >
-                Show me Damin Lillard&apos;s top 5 scoring playoff games.
-              </p>
-              <p 
-                className="cursor-pointer hover:text-blue-600 transition-colors" 
-                onClick={() => setInput("How many times have the Celtics won a championship?")}
-              >
-                How many times have the Celtics won a championship?
-              </p>
+              {selectedSport === "NBA" ? (
+                <>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("How many games has Steph Curry score 10 or more 3 point shots in a game?")}
+                  >
+                    How many games has Steph Curry scored 10 or more 3 point shots in a game?
+                  </p>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("Show me Damin Lillard's top 5 scoring playoff games.")}
+                  >
+                    Show me Damin Lillard&apos;s top 5 scoring playoff games.
+                  </p>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("How many times have the Celtics won a championship?")}
+                  >
+                    How many times have the Celtics won a championship?
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("Which quarterback had the highest passer rating last season?")}
+                  >
+                    Which quarterback had the highest passer rating last season?
+                  </p>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("Which team scored the most points in the first quarter throughout the current season?")}
+                  >
+                    Which team scored the most points in the first quarter throughout the current season?
+                  </p>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("What's the win-loss record for teams playing after a bye week?")}
+                  >
+                    What&apos;s the win-loss record for teams playing after a bye week?
+                  </p>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("When Tyreek Hill played for Kansas City, what were his average receiving yards per game against the Chargers?")}
+                  >
+                    When Tyreek Hill played for Kansas City, what were his average receiving yards per game against the Chargers?
+                  </p>
+                  <p 
+                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    onClick={() => setInput("Which kicker has been most accurate from beyond 50 yards over the last 5 seasons?")}
+                  >
+                    Which kicker has been most accurate from beyond 50 yards over the last 5 seasons?
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>

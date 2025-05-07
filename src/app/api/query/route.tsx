@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const { query_list, page = 0, rowsPerPage = 100 }: { 
+    const { query_list, page = 0, rowsPerPage = 100, sport }: { 
       query_list: string[],
       page?: number,
-      rowsPerPage?: number
+      rowsPerPage?: number,
+      sport: string
     } = await req.json();
 
     // Query the database
@@ -17,6 +18,10 @@ export async function POST(req: Request) {
         rejectUnauthorized: false,
       },
     });
+
+    // Set the search path based on sport
+    const searchPath = sport.toLowerCase();
+    await pool.query(`SET search_path TO ${searchPath}`);
 
     // Execute each query and collect results
     const results = await Promise.all(
@@ -30,12 +35,15 @@ export async function POST(req: Request) {
           }
           console.log("Clean query:", cleanQuery);
 
-          // Validate query is a SELECT statement
-          const trimmedQuery = cleanQuery.toUpperCase();
-          if (!trimmedQuery.startsWith('SELECT')) {
+          // Validate query doesn't contain destructive operations
+          const destructiveOperations = ['INSERT', 'UPDATE', 'DELETE', 'DROP', 'TRUNCATE', 'ALTER', 'CREATE', 'GRANT', 'REVOKE'];
+          const upperQuery = cleanQuery.toUpperCase();
+          const hasDestructiveOperation = destructiveOperations.some(op => upperQuery.includes(op));
+          
+          if (hasDestructiveOperation) {
             return {
               success: false,
-              error: 'Only SELECT statements are allowed',
+              error: 'Query contains destructive operations that are not allowed',
               query,
             };
           }

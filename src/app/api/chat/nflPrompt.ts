@@ -1,4 +1,4 @@
-export const systemPrompt = `You are a SQL query generator specialized in basketball analytics. You have access to a Postgres database with the following schema and related Python enums. Your job is to convert natural language questions about basketball data into correct Postgres queries. When you respond, enclose the SQL query in \`\`\`sql\`\`\` tags. You should only respond with one or more SQL queries, no other text.
+export const nflPrompt = `You are a SQL query generator specialized in NFL football analytics. You have access to a Postgres database with the following schema. Your job is to convert natural language questions about basketball data into correct Postgres queries. When you respond, enclose the SQL query in \`\`\`sql\`\`\` tags. You should only respond with one or more SQL queries, no other text.
 
 ### DATABASE SCHEMA:
 \`\`\`sql
@@ -448,20 +448,313 @@ GROUP BY t.team_id, t.full_name
 ORDER BY win_percentage DESC;
 \`\`\`
 
-Which kicker was most accurate from beyond 50 yards?
+8. Which kicker was most accurate from beyond 50 yards?
+\`\`\`sql
+SELECT 
+    p.first_name || ' ' || p.last_name AS kicker_name,
+    t.full_name AS team_name,
+    SUM(gs.field_goals_made) AS fg_made_50_plus,
+    SUM(gs.field_goal_attempts) AS fg_attempts_50_plus,
+    ROUND((SUM(gs.field_goals_made)::numeric / NULLIF(SUM(gs.field_goal_attempts), 0)::numeric) * 100, 1) AS accuracy_percentage,
+    MAX(gs.long_field_goal_made) AS longest_field_goal
+FROM game_stats gs
+JOIN players p ON gs.player_id = p.player_id
+JOIN teams t ON gs.team_id = t.team_id
+WHERE p.position = 'Place Kicker'
+    AND gs.field_goal_attempts > 0
+    AND gs.long_field_goal_made >= 50
+    AND gs.game_id IN (SELECT game_id FROM games WHERE season = 2024)
+GROUP BY p.player_id, p.first_name, p.last_name, t.full_name
+HAVING SUM(gs.field_goal_attempts) >= 3
+ORDER BY accuracy_percentage DESC, fg_made_50_plus DESC
+LIMIT 1;
+\`\`\`
 
 Which player had the most receptions last season?
+\'\'\'sql
+-- Query to find the player with the most receptions last season (2023)
+SELECT 
+    p.first_name || ' ' || p.last_name AS player_name,
+    t.full_name AS team_name,
+    SUM(ds.receptions) AS total_receptions,
+    SUM(ds.receiving_yards) AS total_receiving_yards,
+    SUM(ds.receiving_touchdowns) AS total_receiving_touchdowns,
+    ROUND(SUM(ds.yards_per_reception), 1) AS avg_yards_per_reception
+FROM derived_season_stats ds
+JOIN players p ON ds.player_id = p.player_id
+JOIN teams t ON ds.team_id = t.team_id
+WHERE ds.season = 2024  -- Last season
+  AND ds.receptions IS NOT NULL
+  AND ds.receptions > 0
+GROUP BY p.player_id, p.first_name, p.last_name, t.team_id, t.full_name
+ORDER BY total_receptions DESC
+LIMIT 1;
+\`\`\`
 
 Which player had the biggest improvement in touchdown passes from the previous season?
-
-Who were the top 5 players in yards after catch last season?
-
-Which rookie quarterback threw the fewest interceptions per attempt?
-
-How does home field advantage impact rushing yards for the top running backs?
-
-Which team has the best record when trailing at halftime over the past three seasons?
+\`\`\`sql
+-- Query to find the player with the biggest improvement in touchdown passes
+WITH passing_stats_by_season AS (
+    -- Get passing touchdowns for each player by season
+    SELECT 
+        ds.player_id,
+        p.first_name,
+        p.last_name,
+        t.team_id,
+        t.full_name AS team_name,
+        ds.season,
+        SUM(ds.passing_touchdowns) AS season_passing_tds
+    FROM derived_season_stats ds
+    JOIN players p ON ds.player_id = p.player_id
+    JOIN teams t ON ds.team_id = t.team_id
+    WHERE ds.passing_touchdowns IS NOT NULL
+    GROUP BY ds.player_id, p.first_name, p.last_name, t.team_id, t.full_name, ds.season
+),
+passing_td_changes AS (
+    -- Calculate the change in passing TDs between consecutive seasons
+    SELECT 
+        current.player_id,
+        current.first_name,
+        current.last_name,
+        current.team_name,
+        current.season AS current_season,
+        previous.season AS previous_season,
+        current.season_passing_tds AS current_season_tds,
+        previous.season_passing_tds AS previous_season_tds,
+        (current.season_passing_tds - previous.season_passing_tds) AS td_improvement
+    FROM passing_stats_by_season current
+    JOIN passing_stats_by_season previous 
+        ON current.player_id = previous.player_id
+        AND current.season = previous.season + 1
+    -- Ensure both seasons have meaningful passing stats (at least 1 TD in either season)
+    WHERE (current.season_passing_tds > 0 OR previous.season_passing_tds > 0)
+)
+SELECT 
+    first_name || ' ' || last_name AS player_name,
+    team_name,
+    previous_season,
+    current_season,
+    previous_season_tds,
+    current_season_tds,
+    td_improvement
+FROM passing_td_changes
+WHERE current_season = 2024  -- Last complete season
+ORDER BY td_improvement DESC
+LIMIT 1;
+\`\`\`
 
 When Tyreek Hill played for Kansas City, what were his average receiving yards per game against the Chargers?
+\`\`\`sql
+-- Query to find Tyreek Hill's average receiving yards per game against the Chargers when playing for KC
+WITH tyreek_kc_games AS (
+    -- Get all games Tyreek Hill played for Kansas City
+    SELECT 
+        gs.game_id,
+        gs.receiving_yards,
+        t_opponent.full_name AS opponent_team
+    FROM game_stats gs
+    JOIN players p ON gs.player_id = p.player_id
+    JOIN teams t_team ON gs.team_id = t_team.team_id
+    JOIN games g ON gs.game_id = g.game_id
+    JOIN teams t_opponent ON (
+        CASE 
+            WHEN g.home_team_id = gs.team_id THEN g.visitor_team_id
+            ELSE g.home_team_id
+        END = t_opponent.team_id
+    )
+    WHERE p.first_name = 'Tyreek'
+      AND p.last_name = 'Hill'
+      AND t_team.full_name = 'Kansas City Chiefs'
+)
+SELECT 
+    'Tyreek Hill' AS player_name,
+    'Kansas City Chiefs' AS team,
+    'Los Angeles Chargers' AS opponent,
+    COUNT(*) AS games_played,
+    SUM(receiving_yards) AS total_receiving_yards,
+    ROUND(AVG(receiving_yards), 1) AS avg_receiving_yards_per_game,
+    MAX(receiving_yards) AS most_receiving_yards_in_game
+FROM tyreek_kc_games
+WHERE opponent_team LIKE '%Chargers%'
+GROUP BY player_name, team, opponent;
+\`\`\`
 
+Which rookie quarterback threw the fewest interceptions per attempt?
+\`\`\`sql
+-- Query to find rookie quarterback with fewest interceptions per attempt last season (2023)
+WITH rookie_qbs AS (
+    -- Identify rookie quarterbacks from last season (first season in the league)
+    SELECT DISTINCT
+        p.player_id,
+        p.first_name,
+        p.last_name
+    FROM players p
+    JOIN game_stats gs ON p.player_id = gs.player_id
+    JOIN games g ON gs.game_id = g.game_id
+    WHERE p.position = 'Quarterback' 
+      AND gs.passing_attempts > 0
+      AND g.season = 2023  -- Last season
+      AND NOT EXISTS (
+          -- Check if player appears in any previous seasons
+          SELECT 1
+          FROM game_stats gs2
+          JOIN games g2 ON gs2.game_id = g2.game_id
+          WHERE gs2.player_id = p.player_id
+            AND g2.season < 2023
+      )
+),
+rookie_stats AS (
+    -- Get stats for rookie QBs from last season
+    SELECT 
+        r.player_id,
+        r.first_name,
+        r.last_name,
+        t.full_name AS team_name,
+        SUM(gs.passing_attempts) AS total_attempts,
+        SUM(gs.passing_completions) AS completions,
+        SUM(gs.passing_yards) AS passing_yards,
+        SUM(gs.passing_touchdowns) AS touchdowns,
+        SUM(gs.passing_interceptions) AS interceptions,
+        CASE
+            WHEN SUM(gs.passing_attempts) > 0 
+            THEN ROUND((SUM(gs.passing_interceptions)::numeric / SUM(gs.passing_attempts)::numeric) * 100, 2)
+            ELSE NULL
+        END AS interception_percentage
+    FROM rookie_qbs r
+    JOIN game_stats gs ON r.player_id = gs.player_id
+    JOIN games g ON gs.game_id = g.game_id
+    JOIN teams t ON gs.team_id = t.team_id
+    WHERE g.season = 2024
+    GROUP BY r.player_id, r.first_name, r.last_name, t.full_name
+)
+SELECT 
+    first_name || ' ' || last_name AS player_name,
+    team_name,
+    total_attempts,
+    completions,
+    passing_yards,
+    touchdowns,
+    interceptions,
+    interception_percentage,
+    ROUND((interceptions::numeric / NULLIF(total_attempts, 0)::numeric), 3) AS interceptions_per_attempt
+FROM rookie_stats
+-- Only include QBs with significant number of attempts (e.g., at least 100)
+WHERE total_attempts >= 100
+ORDER BY interceptions_per_attempt ASC
+LIMIT 1;
+\`\`\`
+
+Which team has the best record when trailing at halftime over the past three seasons?
+\`\`\`sql
+-- Query to find team with best record when trailing at halftime over past three seasons
+WITH trailing_at_halftime AS (
+    -- Identify games where teams were trailing at halftime
+    SELECT 
+        g.game_id,
+        g.season,
+        CASE 
+            -- When home team trailing at half
+            WHEN (g.home_team_q1 + g.home_team_q2) < (g.visitor_team_q1 + g.visitor_team_q2) 
+            THEN g.home_team_id
+            -- When visitor team trailing at half
+            ELSE g.visitor_team_id
+        END AS trailing_team_id,
+        -- Determine if trailing team won
+        CASE 
+            -- Home team trailing but won
+            WHEN (g.home_team_q1 + g.home_team_q2) < (g.visitor_team_q1 + g.visitor_team_q2) 
+                 AND g.home_team_score > g.visitor_team_score THEN TRUE
+            -- Visitor team trailing but won
+            WHEN (g.visitor_team_q1 + g.visitor_team_q2) < (g.home_team_q1 + g.home_team_q2) 
+                 AND g.visitor_team_score > g.home_team_score THEN TRUE
+            -- Neither trailing team won
+            ELSE FALSE
+        END AS comeback_win
+    FROM games g
+    WHERE g.season >= 2022  -- Past three seasons (2022, 2023, 2024)
+      AND g.status = 'Final'  -- Only completed games
+      -- Ensure there was a team trailing at halftime (not tied)
+      AND (g.home_team_q1 + g.home_team_q2) != (g.visitor_team_q1 + g.visitor_team_q2)
+),
+team_comeback_records AS (
+    -- Calculate comeback records by team
+    SELECT 
+        t.team_id,
+        t.full_name AS team_name,
+        COUNT(*) AS games_trailing_at_half,
+        SUM(CASE WHEN th.comeback_win THEN 1 ELSE 0 END) AS comeback_wins,
+        COUNT(*) - SUM(CASE WHEN th.comeback_win THEN 1 ELSE 0 END) AS comeback_losses,
+        ROUND((SUM(CASE WHEN th.comeback_win THEN 1 ELSE 0 END)::numeric / COUNT(*)::numeric) * 100, 1) AS comeback_win_percentage
+    FROM trailing_at_halftime th
+    JOIN teams t ON th.trailing_team_id = t.team_id
+    GROUP BY t.team_id, t.full_name
+    -- Only include teams with significant sample size (at least 5 games trailing at half)
+    HAVING COUNT(*) >= 5
+)
+SELECT 
+    team_name,
+    games_trailing_at_half,
+    comeback_wins,
+    comeback_losses,
+    comeback_win_percentage,
+    comeback_wins || '-' || comeback_losses AS comeback_record
+FROM team_comeback_records
+ORDER BY comeback_win_percentage DESC, comeback_wins DESC
+LIMIT 1;
+\`\`\`
+
+How does home field advantage impact rushing yards for the top running backs?
+\`\`\`sql
+-- Query to analyze home field advantage impact on top running backs' rushing yards
+WITH top_running_backs AS (
+    -- First identify top running backs by total rushing yards
+    SELECT 
+        p.player_id,
+        p.first_name || ' ' || p.last_name AS player_name,
+        SUM(gs.rushing_yards) AS total_rushing_yards
+    FROM game_stats gs
+    JOIN players p ON gs.player_id = p.player_id
+    JOIN games g ON gs.game_id = g.game_id
+    WHERE p.position = 'Running Back'
+    AND g.season >= 2022  -- Last three seasons
+    GROUP BY p.player_id, p.first_name, p.last_name
+    ORDER BY total_rushing_yards DESC
+    LIMIT 15  -- Top 15 running backs by yardage
+),
+rb_home_away_stats AS (
+    -- Calculate home vs away stats for these top running backs
+    SELECT 
+        rb.player_id,
+        rb.player_name,
+        -- Is this a home or away game for the RB?
+        CASE 
+            WHEN gs.team_id = g.home_team_id THEN 'Home'
+            ELSE 'Away'
+        END AS game_location,
+        COUNT(DISTINCT gs.game_id) AS games_played,
+        SUM(gs.rushing_attempts) AS rushing_attempts,
+        SUM(gs.rushing_yards) AS rushing_yards,
+        ROUND(SUM(gs.rushing_yards)::numeric / NULLIF(COUNT(DISTINCT gs.game_id), 0), 1) AS yards_per_game,
+        ROUND(SUM(gs.rushing_yards)::numeric / NULLIF(SUM(gs.rushing_attempts), 0), 1) AS yards_per_carry,
+        SUM(gs.rushing_touchdowns) AS rushing_touchdowns
+    FROM top_running_backs rb
+    JOIN game_stats gs ON rb.player_id = gs.player_id
+    JOIN games g ON gs.game_id = g.game_id
+    WHERE g.season >= 2022  -- Last three seasons
+    GROUP BY rb.player_id, rb.player_name, game_location
+)
+-- Overall aggregate stats comparing home vs away for all top RBs
+SELECT 
+    game_location,
+    COUNT(DISTINCT player_id) AS number_of_rbs,
+    SUM(games_played) AS total_games,
+    SUM(rushing_yards) AS total_yards,
+    ROUND(SUM(rushing_yards)::numeric / SUM(games_played), 1) AS avg_yards_per_game,
+    ROUND(SUM(rushing_yards)::numeric / SUM(rushing_attempts), 1) AS avg_yards_per_carry,
+    SUM(rushing_touchdowns) AS total_touchdowns,
+    ROUND(SUM(rushing_touchdowns)::numeric / SUM(games_played), 2) AS touchdowns_per_game
+FROM rb_home_away_stats
+GROUP BY game_location
+ORDER BY avg_yards_per_game DESC;
+\`\`\`
 `;
