@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client"
 import { useRouter } from "next/navigation"
+import { ResultsTable } from "@/components/results-table"
 
 interface SQLBlock {
   sql: string
@@ -309,55 +310,6 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     }
   }
 
-  // Remove the displayTableHTML function and add these components instead
-  function ResultsTable({ results, pagination }: { results: Array<Record<string, any>>, pagination?: SQLBlock['pagination'] }) {
-    if (!results.length) return <p>No results to display.</p>;
-
-    const headers = Object.keys(results[0]);
-
-    return (
-      <div className="overflow-x-auto mt-2.5 w-full">
-        <table className="border-collapse w-full text-sm">
-          <thead>
-            <tr className="border-b-2 border-gray-300">
-              {headers.map((header, i) => (
-                <th key={i} className="text-left p-2 whitespace-nowrap">{header}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((row, rowIndex) => (
-              <tr key={rowIndex} className="border-t border-gray-200">
-                {headers.map((header, cellIndex) => (
-                  <td key={cellIndex} className="text-left p-2">{String(row[header])}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        {pagination && (
-          <div className="mt-2.5 text-sm text-gray-500">
-            Showing {pagination.page * pagination.rowsPerPage + 1}-
-            {Math.min((pagination.page + 1) * pagination.rowsPerPage, pagination.totalRows)} of {pagination.totalRows} results
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  function QueryResult({ block }: { block: SQLBlock }) {
-    if (block.hasError) {
-      return <p className="text-red-400">Error: {block.errorMessage || "The query might be invalid or the database unavailable."}</p>;
-    }
-    
-    if (!block.results) {
-      return <p>Loading results...</p>;
-    }
-    
-    return <ResultsTable results={block.results} pagination={block.pagination} />;
-  }
-
   const submitFeedback = async (sqlBlock: SQLBlock, isThumbsUp: boolean) => {
     if (!user) {
       console.log("User not logged in, feedback not submitted")
@@ -453,6 +405,10 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
   const messageList = (
     <div className="my-4 flex h-fit min-h-full flex-col gap-4">
+      <div className="text-sm text-gray-500 mb-2">
+        Selected Sport: <span className="font-medium text-gray-700">{selectedSport}</span>
+      </div>
+      
       {messages.map((message, index) => {
         const associatedSqlBlocks = sqlBlocks.filter((block) => block.messageIndex === index)
         const hasSqlBlock = associatedSqlBlocks.length > 0
@@ -672,4 +628,16 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       </form>
     </main>
   )
+}
+
+function QueryResult({ block }: { block: SQLBlock }) {
+  if (block.hasError) {
+    return <p className="text-red-400">Error: {block.errorMessage || "The query might be invalid or the database unavailable."}</p>;
+  }
+  
+  if (!block.results) {
+    return <p>Loading results...</p>;
+  }
+  
+  return <ResultsTable results={block.results} pagination={block.pagination} />;
 }

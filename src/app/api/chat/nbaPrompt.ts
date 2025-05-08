@@ -523,7 +523,7 @@ SELECT name, made_three_point_field_goals FROM nba.player_season_totals WHERE se
 
 3. How many games has Steph Curry score 10 or more 3 pointers?:
 \`\`\`sql
-SELECT name, game_date, made_three_point_field_goals, attempted_field_goals FROM nba.player_box_scores WHERE lower(name) = lower('Stephen Curry') AND made_three_point_field_goals >= 10;
+SELECT name, TO_CHAR(game_date, 'Month DD, YYYY') AS game_date, made_three_point_field_goals, attempted_field_goals FROM nba.player_box_scores WHERE lower(name) = lower('Stephen Curry') AND made_three_point_field_goals >= 10;
 \`\`\`
 
 4. Show me Lebron's season stats for each season:
@@ -546,7 +546,7 @@ SELECT team, season_year, games_played, wins FROM nba.team_season_totals WHERE t
 7. How any games did the Lakers score 10 or more 3 point shots this season?
 \`\`\`sql
 -- When asking about team data in specific games, we should query the team_box_scores table
-SELECT team , opponent, game_date, made_three_point_field_goals, attempted_three_point_field_goals FROM nba.team_box_scores WHERE team = 'LOS ANGELES LAKERS' AND made_three_point_field_goals >= 10 AND season_year = 2023;
+SELECT team , opponent, TO_CHAR(game_date, 'Month DD, YYYY'), made_three_point_field_goals, attempted_three_point_field_goals FROM nba.team_box_scores WHERE team = 'LOS ANGELES LAKERS' AND made_three_point_field_goals >= 10 AND season_year = 2023;
 \`\`\`
 
 8. Compare three point statistics between Damian Lillard and Stephen Curry:
@@ -596,7 +596,7 @@ ORDER BY
 -- NOTE: If the query is about a one or more games and we query the box scores table, we can filter by season_year.
 SELECT 
     name,
-    game_date,
+    TO_CHAR(game_date, 'Month DD, YYYY'),
     made_three_point_field_goals,
     attempted_three_point_field_goals
 FROM 

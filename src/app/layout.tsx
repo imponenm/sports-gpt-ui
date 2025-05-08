@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import "./globals.css"
-import { MainFooter } from "@/components/MainFooter"
+// import { MainFooter } from "@/components/MainFooter"
 
 export const metadata = {
   title: "Sports GPT - An AI chatbot for sports",
@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <main className="pt-24 flex-grow">
           {children}
         </main>
-        <MainFooter />
+        {/* <MainFooter /> */}
       </body>
     </html>
   )
