@@ -29,11 +29,9 @@ export async function POST(req: Request) {
         try {
           // Remove any trailing semicolons from the query
           let cleanQuery = query.trim();
-          console.log("Clean query:", cleanQuery);
           if (cleanQuery.endsWith(';')) {
             cleanQuery = cleanQuery.slice(0, -1);
           }
-          console.log("Clean query:", cleanQuery);
 
           // Validate query doesn't contain destructive operations
           const destructiveOperations = ['INSERT', 'UPDATE', 'DELETE', 'DROP', 'TRUNCATE', 'ALTER', 'CREATE', 'GRANT', 'REVOKE'];

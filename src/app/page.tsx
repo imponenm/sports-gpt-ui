@@ -5,6 +5,8 @@ import { User } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
 import { MainHeader } from "@/components/MainHeader"
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { CheckCircle2, Brain, Trophy } from 'lucide-react';
 
 export default function Page() {
 
@@ -38,6 +40,14 @@ export default function Page() {
     };
   }, []);
 
+  const handleTryGPT = () => {
+    if (user) {
+      router.push('/chat');
+    } else {
+      router.push('/login');
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <MainHeader user={user} />
@@ -46,13 +56,13 @@ export default function Page() {
           {/* Left Section */}
           <div className="flex-1 space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-              GPT for Sports
+              Chatbot for Sports Data
             </h1>
             <p className="text-xl text-gray-600">
-            A fast, accurate AI chatbot fine-tuned for reliable sports data retrieval
+            Get accurate answers to sports questions from an AI that has access to real data.
             </p>
             <button 
-              onClick={() => router.push('/chat')}
+              onClick={handleTryGPT}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Try GPT for Sports
@@ -61,9 +71,13 @@ export default function Page() {
 
           {/* Right Section */}
           <div className="flex-1">
-            <div className="aspect-square bg-gray-100 rounded-lg">
-              {/* Add your image here */}
-              {/* <Image src="/your-image.jpg" alt="Sports AI" width={500} height={500} /> */}
+            <div className="relative w-full h-[400px]">
+              <Image 
+                src="/sample1.png" 
+                alt="Sports AI" 
+                fill
+                className="object-contain rounded-lg"
+              />
             </div>
           </div>
         </div>
@@ -74,9 +88,8 @@ export default function Page() {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="flex items-start gap-4 p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                {/* Add your icon/image here */}
-                {/* <Image src="/accuracy-icon.png" alt="Accuracy" width={24} height={24} /> */}
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center px-2">
+                <CheckCircle2 className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">Accurate</h3>
@@ -88,9 +101,8 @@ export default function Page() {
 
             {/* Feature 2 */}
             <div className="flex items-start gap-4 p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                {/* Add your icon/image here */}
-                {/* <Image src="/intelligence-icon.png" alt="Intelligence" width={24} height={24} /> */}
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center px-2">
+                <Brain className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">Intelligent</h3>
@@ -102,18 +114,32 @@ export default function Page() {
 
             {/* Feature 3 */}
             <div className="flex items-start gap-4 p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                {/* Add your icon/image here */}
-                {/* <Image src="/sports-icon.png" alt="Multiple Sports" width={24} height={24} /> */}
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center px-2">
+                <Trophy className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">Multiple Sports</h3>
                 <p className="text-gray-600">
-                  Ask questions about NBA and NFL data. More sports like MLB and EPL (English Premier League) are coming soon
+                  Ask questions about NBA and NFL data. More sports like MLB and EPL are coming soon
                 </p>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Pricing Section */}
+        <div className="max-w-3xl mx-auto mt-24 text-center">
+          <h2 className="text-3xl font-bold mb-6">Pricing</h2>
+          <p className="text-xl text-gray-600 mb-12">
+            Currently in beta: Unlimited free usage for all users.<br />
+            After beta: Free tier with limited usage and paid tier with unlimited access.
+          </p>
+          <button 
+            onClick={handleTryGPT}
+            className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
+          >
+            Try GPT for Sports Now
+          </button>
         </div>
       </main>
     </div>

@@ -22,7 +22,8 @@ export function MainHeader({ user }: { user: User | null }) {
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-blue-600">Sports GPT</span>
+            <span className="text-2xl font-bold text-blue-600">GPT for Sports</span>
+            <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-600 rounded-full">BETA</span>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
