@@ -71,12 +71,14 @@ export default function Page() {
 
           {/* Right Section */}
           <div className="flex-1">
-            <div className="relative w-full h-[400px]">
+            <div className="relative w-full">
               <Image 
                 src="/sample1.png" 
                 alt="Sports AI" 
-                fill
-                className="object-contain rounded-lg"
+                width={500}
+                height={375}
+                className="w-full h-auto rounded-lg"
+                priority
               />
             </div>
           </div>

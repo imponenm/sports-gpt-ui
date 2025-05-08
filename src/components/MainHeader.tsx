@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client';
 import { User } from "@supabase/supabase-js";
+import { useState } from 'react';
 
 export function MainHeader({ user }: { user: User | null }) {
   const supabase = createClient();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -26,6 +28,7 @@ export function MainHeader({ user }: { user: User | null }) {
             <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-600 rounded-full">BETA</span>
           </Link>
           
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
               Home
@@ -46,7 +49,77 @@ export function MainHeader({ user }: { user: User | null }) {
               </Link>
             )}
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden p-2"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <svg 
+              className="w-6 h-6 text-gray-600" 
+              fill="none" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth="2" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              {isMenuOpen ? (
+                <path d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
+
+        {/* Mobile Navigation Dropdown */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200">
+            <nav className="flex flex-col space-y-4">
+              <Link 
+                href="/" 
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                href="/about" 
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link 
+                href="mailto:support@gptforsports.com" 
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Support
+              </Link>
+              {user ? (
+                <button 
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }} 
+                  className="text-gray-600 hover:text-blue-600 transition-colors text-left"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link 
+                  href="/login" 
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   )
