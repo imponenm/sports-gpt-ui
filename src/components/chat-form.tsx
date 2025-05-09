@@ -435,11 +435,13 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                     <div className="text-xs text-gray-400">View SQL:</div>
                   </div>
                   
+                  {/* Commented out SQL display
                   {block.isExpanded && (
                     <div className="mt-2 pl-5 border-l border-gray-700 py-1">
                       {block.sql}
                     </div>
                   )}
+                  */}
                   
                   <div className="mt-2">
                     <QueryResult block={block} />
