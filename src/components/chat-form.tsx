@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { cn } from "@/lib/utils"
-import { ArrowUpIcon, ThumbsUpIcon, ThumbsDownIcon } from "lucide-react"
+import { ArrowUpIcon, ThumbsUpIcon, ThumbsDownIcon, ShareIcon, CheckIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
@@ -38,6 +38,10 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
   const [input, setInput] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [rowsPerPage] = useState(100); // Configure rows per page
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   // Extract SQL queries from message content
   const extractSqlQueries = (content: string): string[] => {
@@ -358,6 +362,57 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     }
   }
 
+  // Add function to share conversation
+  const shareConversation = async () => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    setIsSharing(true);
+    
+    try {
+      const supabase = createClient();
+      
+      // Save the conversation to the database
+      const { data, error } = await supabase
+        .schema('shared_conversations')
+        .from('shared_conversations')
+        .insert({
+          user_id: user.id,
+          sport: selectedSport,
+          messages: messages,
+          sql_blocks: sqlBlocks
+        })
+        .select('id')
+        .single();
+      
+      if (error) {
+        console.error("Error sharing conversation:", error);
+        return;
+      }
+      
+      // Generate share URL
+      const shareUrl = `${window.location.origin}/shared/${data.id}`;
+      setShareUrl(shareUrl);
+      setShowShareDialog(true);
+      
+    } catch (error) {
+      console.error("Error in sharing conversation:", error);
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  // Function to copy share URL to clipboard
+  const copyShareUrl = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
+  };
+
   const header = (
     <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
       <h1 className="text-3xl md:text-4xl font-semibold leading-none tracking-tight text-purple-300">Sports GPT</h1>
@@ -405,8 +460,22 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
   const messageList = (
     <div className="my-4 flex h-fit min-h-full flex-col gap-4">
-      <div className="text-sm md:text-base text-gray-400 mb-2">
-        Selected Sport: <span className="font-medium text-purple-300">{selectedSport}</span>
+      <div className="flex justify-between items-center text-sm md:text-base text-gray-400 mb-2">
+        <div>
+          Selected Sport: <span className="font-medium text-purple-300">{selectedSport}</span>
+        </div>
+        {messages.length > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-gray-400 hover:text-purple-300 flex items-center gap-1"
+            onClick={shareConversation}
+            disabled={isSharing || messages.length === 0}
+          >
+            <ShareIcon size={16} />
+            <span>Share</span>
+          </Button>
+        )}
       </div>
       
       {messages.map((message, index) => {
@@ -507,6 +576,42 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
     }
   }
 
+  // Add share dialog component
+  const shareDialog = (
+    <div className={`fixed inset-0 bg-black/50 flex items-center justify-center z-50 ${showShareDialog ? '' : 'hidden'}`}>
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 max-w-md w-full">
+        <h3 className="text-xl font-medium text-purple-300 mb-4">Share Conversation</h3>
+        <p className="text-gray-300 mb-4">Anyone with this link can view this conversation:</p>
+        
+        <div className="flex items-center mb-6 gap-2">
+          <input
+            type="text"
+            value={shareUrl}
+            readOnly
+            className="flex-1 bg-gray-900 border border-gray-700 rounded-md py-2 px-3 text-gray-100"
+          />
+          <Button 
+            onClick={copyShareUrl}
+            disabled={isCopied}
+            className={`${isCopied ? 'bg-green-600' : 'bg-purple-600 hover:bg-purple-700'} text-white rounded-md py-2 px-4 min-w-[70px]`}
+          >
+            {isCopied ? <CheckIcon size={16} /> : "Copy"}
+          </Button>
+        </div>
+        
+        <div className="flex justify-end">
+          <Button
+            variant="ghost"
+            onClick={() => setShowShareDialog(false)}
+            className="text-gray-300 hover:text-purple-300"
+          >
+            Close
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <main
       className={cn(
@@ -606,6 +711,9 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           <ArrowUpIcon size={16} />
         </Button>
       </form>
+      
+      {/* Add share dialog */}
+      {shareDialog}
     </main>
   )
 }
