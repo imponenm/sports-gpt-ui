@@ -66,7 +66,7 @@ export default function Page() {
               Chatbot for Sports Data
             </h1>
             <p className="text-xl text-gray-400">
-            Get accurate answers to sports questions from an AI that has access to real data.
+            Ask sports questions, and get accurate answers from an AI that has access to real data.
             </p>
             <button 
               onClick={handleTryGPT}
