@@ -337,7 +337,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
         console.error("Error submitting feedback:", error)
         return
       }
-      // tmp
+      
       // Update the local state to reflect feedback was given
       setSqlBlocks(prevBlocks => {
         return prevBlocks.map(block => {
