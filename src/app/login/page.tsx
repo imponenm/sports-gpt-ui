@@ -76,7 +76,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md p-8 mx-auto bg-white rounded-lg shadow-lg">
           <div className="flex flex-col items-center mb-8">
             {/* <Icon iconNode={basketball} size={72} /> */}
-            <Image src="/basketball-logo.png" alt="Sports GPT Logo (Designed by Wannapik)" width={72} height={72} />
+            <Image src="/bball-logo-blue.png" alt="Sports GPT Logo" width={72} height={72} />
             <h1 className="text-2xl font-bold text-gray-800 mt-8">Login to Sports GPT</h1>
             <p className="text-gray-600 mt-2">Enter your email to sign up or login</p>
           </div>
