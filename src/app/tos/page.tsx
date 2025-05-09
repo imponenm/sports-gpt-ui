@@ -41,7 +41,7 @@ export default function TermsOfServicePage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Introduction</h2>
           <p className="mb-3">
-            Welcome to GPT for Sports, an AI chatbot service designed to answer sports-related questions. By accessing or using our service, you agree to be bound by these Terms of Service ("Terms"). Please read these Terms carefully before using our service.
+            Welcome to GPT for Sports, an AI chatbot service designed to answer sports-related questions. By accessing or using our service, you agree to be bound by these Terms of Service (&quot;Terms&quot;). Please read these Terms carefully before using our service.
           </p>
           <p className="mb-3">
             These Terms constitute a legally binding agreement between you and GPT for Sports regarding your use of the service. If you do not agree to these Terms, please do not use our service.
@@ -153,7 +153,7 @@ export default function TermsOfServicePage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Indemnification</h2>
           <p className="mb-3">
-            You agree to defend, indemnify, and hold harmless GPT for Sports and its officers, directors, employees, and agents from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or relating to your violation of these Terms or your use of the service.
+            You agree to defend, indemnify, and hold harmless GPT for Sports and its officers, directors, employees, and agents from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys&apos; fees) arising out of or relating to your violation of these Terms or your use of the service.
           </p>
         </section>
 

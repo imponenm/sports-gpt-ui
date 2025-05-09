@@ -41,7 +41,7 @@ export default function PrivacyPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Introduction</h2>
           <p className="mb-3">
-            Welcome to GPT for Sports ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data.
+            Welcome to GPT for Sports (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We respect your privacy and are committed to protecting your personal data.
             This privacy policy explains how we collect, use, disclose, and safeguard your information when you use our AI chatbot service.
           </p>
           <p className="mb-3">
@@ -243,7 +243,7 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-semibold mb-4">Changes to This Privacy Policy</h2>
           <p className="mb-3">
             We may update our privacy policy from time to time. We will notify you of any changes by posting the new
-            privacy policy on this page and updating the "Last Updated" date. For material changes, we may provide additional notice, 
+            privacy policy on this page and updating the &quot;Last Updated&quot; date. For material changes, we may provide additional notice, 
             such as a prominent website notice or an email notification.
           </p>
           <p className="mb-3">
