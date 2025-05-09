@@ -36,6 +36,9 @@ export function MainHeader({ user }: { user: User | null }) {
             <Link href="/about" className="text-gray-400 hover:text-purple-300 transition-colors">
               About
             </Link>
+            <Link href="/blog" className="text-gray-400 hover:text-purple-300 transition-colors">
+              Blog
+            </Link>
             <Link href="mailto:support@gptforsports.com" className="text-gray-400 hover:text-purple-300 transition-colors">
               Support
             </Link>
@@ -90,6 +93,13 @@ export function MainHeader({ user }: { user: User | null }) {
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
+              </Link>
+              <Link 
+                href="/blog" 
+                className="text-gray-400 hover:text-purple-300 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Blog
               </Link>
               <Link 
                 href="mailto:support@gptforsports.com" 
