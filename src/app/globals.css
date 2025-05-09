@@ -27,4 +27,14 @@ font-family
 : sans-serif;
     /* color: #333; */
   }
+
+  body {
+    background-color: #111827; /* bg-gray-900 */
+    color: #f3f4f6; /* text-gray-100 */
+  }
+
+  ::selection {
+    background-color: #7e22ce; /* bg-purple-700 */
+    color: #f3f4f6; /* text-gray-100 */
+  }
 }

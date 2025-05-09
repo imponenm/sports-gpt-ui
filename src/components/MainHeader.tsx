@@ -20,31 +20,31 @@ export function MainHeader({ user }: { user: User | null }) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-900 border-b border-gray-800">
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-blue-600">GPT for Sports</span>
-            <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-600 rounded-full">BETA</span>
+            <span className="text-2xl font-bold text-purple-400">GPT for Sports</span>
+            <span className="px-2 py-0.5 text-xs font-medium bg-purple-900 text-purple-200 rounded-full">BETA</span>
           </Link>
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <Link href="/" className="text-gray-400 hover:text-purple-300 transition-colors">
               Home
             </Link>
-            <Link href="/about" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <Link href="/about" className="text-gray-400 hover:text-purple-300 transition-colors">
               About
             </Link>
-            <Link href="mailto:support@gptforsports.com" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <Link href="mailto:support@gptforsports.com" className="text-gray-400 hover:text-purple-300 transition-colors">
               Support
             </Link>
             {user ? (
-              <button onClick={handleLogout} className="text-gray-600 hover:text-blue-600 transition-colors">
+              <button onClick={handleLogout} className="text-gray-400 hover:text-purple-300 transition-colors">
                 Logout
               </button>
             ) : (
-              <Link href="/login" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link href="/login" className="text-gray-400 hover:text-purple-300 transition-colors">
                 Login
               </Link>
             )}
@@ -56,7 +56,7 @@ export function MainHeader({ user }: { user: User | null }) {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <svg 
-              className="w-6 h-6 text-gray-600" 
+              className="w-6 h-6 text-gray-400" 
               fill="none" 
               strokeLinecap="round" 
               strokeLinejoin="round" 
@@ -75,25 +75,25 @@ export function MainHeader({ user }: { user: User | null }) {
 
         {/* Mobile Navigation Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div className="md:hidden py-4 border-t border-gray-800 bg-gray-900">
             <nav className="flex flex-col space-y-4">
               <Link 
                 href="/" 
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-400 hover:text-purple-300 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link 
                 href="/about" 
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-400 hover:text-purple-300 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
               <Link 
                 href="mailto:support@gptforsports.com" 
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-400 hover:text-purple-300 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Support
@@ -104,14 +104,14 @@ export function MainHeader({ user }: { user: User | null }) {
                     handleLogout();
                     setIsMenuOpen(false);
                   }} 
-                  className="text-gray-600 hover:text-blue-600 transition-colors text-left"
+                  className="text-gray-400 hover:text-purple-300 transition-colors text-left"
                 >
                   Logout
                 </button>
               ) : (
                 <Link 
                   href="/login" 
-                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  className="text-gray-400 hover:text-purple-300 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Login

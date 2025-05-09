@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { cn } from "@/lib/utils"
-import { ArrowUpIcon, ThumbsUpIcon, ThumbsDownIcon, ChevronRightIcon } from "lucide-react"
+import { ArrowUpIcon, ThumbsUpIcon, ThumbsDownIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AutoResizeTextarea } from "@/components/autoresize-textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
@@ -224,19 +224,19 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
   }, [messages])
 
   // Toggle function to expand/collapse SQL blocks
-  const toggleSqlBlock = (messageIndex: number, sqlIndex: number) => {
-    setSqlBlocks(prevBlocks => {
-      return prevBlocks.map((block, idx) => {
-        if (block.messageIndex === messageIndex && idx === sqlIndex) {
-          return {
-            ...block,
-            isExpanded: !block.isExpanded
-          }
-        }
-        return block;
-      });
-    });
-  };
+//   const toggleSqlBlock = (messageIndex: number, sqlIndex: number) => {
+//     setSqlBlocks(prevBlocks => {
+//       return prevBlocks.map((block, idx) => {
+//         if (block.messageIndex === messageIndex && idx === sqlIndex) {
+//           return {
+//             ...block,
+//             isExpanded: !block.isExpanded
+//           }
+//         }
+//         return block;
+//       });
+//     });
+//   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -360,14 +360,14 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
   const header = (
     <header className="m-auto flex max-w-lg flex-col gap-5 text-center">
-      <h1 className="text-2xl font-semibold leading-none tracking-tight">Sports GPT</h1>
-      <p className="text-muted-foreground text-md">
+      <h1 className="text-3xl md:text-4xl font-semibold leading-none tracking-tight text-purple-300">Sports GPT</h1>
+      <p className="text-gray-400 text-lg md:text-xl">
         The best chatbot for sports data and analysis.
       </p>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-gray-400 text-base md:text-lg">
         SportsGPT queries data from a reliable sports database to ensure accuracy.
       </p>
-      <div className="text-muted-foreground text-xs mt-1 mb-2 mx-auto max-w-md">
+      <div className="text-gray-400 text-sm md:text-base mt-1 mb-2 mx-auto max-w-md">
         <ul className="text-left list-disc pl-5">
           {selectedSport === "NBA" ? (
             <>
@@ -385,10 +385,10 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       </div>
       <div className="w-48 mx-auto">
         <Select value={selectedSport} onValueChange={setSelectedSport}>
-          <SelectTrigger className="bg-white">
+          <SelectTrigger className="bg-gray-800 border-gray-700 text-gray-100 text-base">
             <SelectValue placeholder="Select a sport" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-gray-800 border-gray-700 text-gray-100">
             <SelectItem value="NBA">NBA</SelectItem>
             <SelectItem value="NFL">NFL</SelectItem>
             <SelectItem value="MLB" disabled>
@@ -405,8 +405,8 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
 
   const messageList = (
     <div className="my-4 flex h-fit min-h-full flex-col gap-4">
-      <div className="text-sm text-gray-500 mb-2">
-        Selected Sport: <span className="font-medium text-gray-700">{selectedSport}</span>
+      <div className="text-sm md:text-base text-gray-400 mb-2">
+        Selected Sport: <span className="font-medium text-purple-300">{selectedSport}</span>
       </div>
       
       {messages.map((message, index) => {
@@ -419,30 +419,8 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
               {associatedSqlBlocks.map((block, sqlIndex) => (
                 <div
                   key={`sql-${index}-${sqlIndex}`}
-                  className="mt-2 w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
+                  className="mt-2 w-full rounded-lg bg-gray-800 border border-gray-700 p-4 text-sm font-mono text-gray-100"
                 >
-                  {/* <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => toggleSqlBlock(block.messageIndex, sqlIndex)}
-                      className="text-gray-400 hover:text-white transition-transform duration-200"
-                      aria-label={block.isExpanded ? "Hide SQL query" : "Show SQL query"}
-                    >
-                      <ChevronRightIcon 
-                        size={18} 
-                        className={`transition-transform ${block.isExpanded ? 'rotate-90' : ''}`} 
-                      />
-                    </button>
-                    <div className="text-xs text-gray-400">View SQL:</div>
-                  </div> */}
-                  
-                  {/* Commented out SQL display
-                  {block.isExpanded && (
-                    <div className="mt-2 pl-5 border-l border-gray-700 py-1">
-                      {block.sql}
-                    </div>
-                  )}
-                  */}
-                  
                   <div className="mt-2">
                     <QueryResult block={block} />
                   </div>
@@ -453,7 +431,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-gray-400 hover:text-white"
+                        className="text-gray-400 hover:text-purple-300"
                         onClick={() => changePage(block, block.pagination!.page - 1)}
                         disabled={block.pagination.page <= 0}
                       >
@@ -462,7 +440,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-gray-400 hover:text-white ml-2"
+                        className="text-gray-400 hover:text-purple-300 ml-2"
                         onClick={() => changePage(block, block.pagination!.page + 1)}
                         disabled={block.pagination.page >= block.pagination.totalPages - 1}
                       >
@@ -481,7 +459,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`p-1 ${block.feedbackGiven && block.feedbackValue ? 'text-green-500' : 'text-gray-400 hover:text-white'}`}
+                        className={`p-1 ${block.feedbackGiven && block.feedbackValue ? 'text-purple-400' : 'text-gray-400 hover:text-purple-300'}`}
                         onClick={() => submitFeedback(block, true)}
                         disabled={block.feedbackGiven}
                       >
@@ -490,7 +468,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`p-1 ${block.feedbackGiven && !block.feedbackValue ? 'text-red-500' : 'text-gray-400 hover:text-white'}`}
+                        className={`p-1 ${block.feedbackGiven && !block.feedbackValue ? 'text-red-400' : 'text-gray-400 hover:text-purple-300'}`}
                         onClick={() => submitFeedback(block, false)}
                         disabled={block.feedbackGiven}
                       >
@@ -511,7 +489,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           <div key={index} className="flex flex-col">
             <div
               data-role={message.role}
-              className="max-w-[70%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
+              className="max-w-[70%] rounded-xl px-3 py-2 text-sm md:text-base data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-800 data-[role=user]:bg-purple-700 data-[role=assistant]:text-gray-100 data-[role=user]:text-white"
             >
               {displayContent}
             </div>
@@ -542,25 +520,25 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       {/* Example prompts - only show when no messages */}
       {messages.length === 0 && (
         <div className="mx-6 mb-4">
-          <div className="bg-gray-100 rounded-xl p-4 text-sm">
-            <p className="text-gray-500 mb-2 font-medium">Try asking:</p>
-            <div className="space-y-2 text-gray-700">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 text-sm md:text-base">
+            <p className="text-gray-400 mb-2 font-medium">Try asking:</p>
+            <div className="space-y-2 text-gray-300">
               {selectedSport === "NBA" ? (
                 <>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("How many games has Steph Curry score 10 or more 3 point shots in a game?")}
                   >
                     How many games has Steph Curry scored 10 or more 3 point shots in a game?
                   </p>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("Show me Damin Lillard's top 5 scoring playoff games.")}
                   >
                     Show me Damin Lillard&apos;s top 5 scoring playoff games.
                   </p>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("How many times have the Celtics won a championship?")}
                   >
                     How many times have the Celtics won a championship?
@@ -569,31 +547,31 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
               ) : (
                 <>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("Which quarterback had the highest passer rating last season?")}
                   >
                     Which quarterback had the highest passer rating last season?
                   </p>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("Which team scored the most points in the first quarter throughout the current season?")}
                   >
                     Which team scored the most points in the first quarter throughout the current season?
                   </p>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("What's the win-loss record for teams playing after a bye week?")}
                   >
                     What&apos;s the win-loss record for teams playing after a bye week?
                   </p>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("When Tyreek Hill played for Kansas City, what were his average receiving yards per game against the Chargers?")}
                   >
                     When Tyreek Hill played for Kansas City, what were his average receiving yards per game against the Chargers?
                   </p>
                   <p 
-                    className="cursor-pointer hover:text-blue-600 transition-colors" 
+                    className="cursor-pointer hover:text-purple-300 transition-colors" 
                     onClick={() => setInput("Which kicker has been most accurate from beyond 50 yards over the last 5 seasons?")}
                   >
                     Which kicker has been most accurate from beyond 50 yards over the last 5 seasons?
@@ -607,7 +585,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
       
       <form
         onSubmit={handleSubmit}
-        className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-6 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-1 focus-within:ring-offset-0"
+        className="border-gray-700 bg-gray-800 focus-within:ring-purple-900/50 relative mx-6 mb-6 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-1 focus-within:ring-offset-0"
       >
         <AutoResizeTextarea
           onKeyDown={handleKeyDown}
@@ -616,13 +594,13 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
           value={input}
           placeholder="Enter a message"
           disabled={isSubmitting}
-          className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
+          className="placeholder:text-gray-500 text-gray-100 flex-1 bg-transparent focus:outline-none"
         />
 
         <Button 
           variant="ghost" 
           size="sm" 
-          className="absolute bottom-1 right-1 size-6 rounded-full" 
+          className="absolute bottom-1 right-1 size-6 rounded-full text-purple-300 hover:text-purple-200 hover:bg-purple-900/20" 
           disabled={isSubmitting}
         >
           <ArrowUpIcon size={16} />
@@ -638,7 +616,7 @@ function QueryResult({ block }: { block: SQLBlock }) {
   }
   
   if (!block.results) {
-    return <p>Loading results...</p>;
+    return <p className="text-gray-400">Loading results...</p>;
   }
   
   return <ResultsTable results={block.results} pagination={block.pagination} />;

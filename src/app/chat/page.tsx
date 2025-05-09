@@ -39,7 +39,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="">
+    <div className="min-h-screen bg-gray-900 text-gray-100">
       <MainHeader user={user} />
       <ChatForm user={user}/>
     </div>
