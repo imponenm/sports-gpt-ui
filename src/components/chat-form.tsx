@@ -421,7 +421,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                   key={`sql-${index}-${sqlIndex}`}
                   className="mt-2 w-full rounded-lg bg-gray-900 p-4 text-sm font-mono text-white"
                 >
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <button 
                       onClick={() => toggleSqlBlock(block.messageIndex, sqlIndex)}
                       className="text-gray-400 hover:text-white transition-transform duration-200"
@@ -433,7 +433,7 @@ export function ChatForm({ className, user, ...props }: React.ComponentProps<"fo
                       />
                     </button>
                     <div className="text-xs text-gray-400">View SQL:</div>
-                  </div>
+                  </div> */}
                   
                   {/* Commented out SQL display
                   {block.isExpanded && (
